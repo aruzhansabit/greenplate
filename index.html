@@ -5,52 +5,150 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>GreenPlate — Weekly University Menu</title>
 
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-  <!-- Chart.js for Carbon Footprint Graph -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     :root{--accent:#2f8f4a;--gold:#b89b5e;--bg:#f4f6f4;--dark:#1e2b24}
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:#111;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif}
-    header{background:linear-gradient(120deg,#203a2f,#2f8f4a);color:white;padding:28px;position:relative;overflow:hidden}
-    header::after{content:"";position:absolute;inset:0;background:url("https://images.unsplash.com/painting?auto=format&fit=crop&w=1400&q=80");opacity:.15}
-    .header-inner{position:relative;z-index:1;max-width:1200px;margin:0 auto}
-    .brand{display:flex;gap:14px;align-items:center}
-    .logo{width:64px;height:64px;background:linear-gradient(145deg,#3dbb6a,#1f6f42);border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem}
+
+    header{background:linear-gradient(120deg,#203a2f,#2f8f4a);color:white;padding:28px}
+    .header-inner{max-width:1200px;margin:0 auto}
     nav{margin-top:18px;display:flex;gap:20px;flex-wrap:wrap}
-    nav a{color:white;text-decoration:none;font-weight:600;letter-spacing:.5px}
+    nav a{color:white;text-decoration:none;font-weight:600}
+
     main{padding:32px;max-width:1200px;margin:0 auto}
-    .hero-art{width:100%;height:240px;border-radius:20px;background:url("https://images.unsplash.com/food-art?auto=format&fit=crop&w=1400&q=80") center/cover;margin-bottom:32px}
+
+    .hero{background:url("https://images.unsplash.com/food?auto=format&fit=crop&w=1400&q=80") center/cover;height:260px;border-radius:20px;margin-bottom:32px}
+
     .grid{display:grid;grid-template-columns:1fr 380px;gap:28px}
     .card{background:white;border-radius:22px;padding:22px;box-shadow:0 10px 28px rgba(15,15,15,0.08)}
+
+    h1,h2,h3{font-family:"Playfair Display",serif}
+
+    .menu-day{margin-bottom:16px}
+    .dish{padding:8px 0;border-bottom:1px dashed #ddd;cursor:pointer}
+    .dish:hover{color:var(--accent)}
+
+    .meta{font-size:.9rem;color:#777}
+
+    .recipes img{width:100%;height:200px;object-fit:cover;border-radius:14px;margin-bottom:10px}
+
+    footer{text-align:center;margin-top:40px;color:#777}
+
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
+
 <header>
   <div class="header-inner">
-    <div class="brand">
-      <div class="logo">GP</div>
-      <div>
-        <div style="font-weight:700;font-size:1.25rem">GreenPlate</div>
-        <div style="font-size:.9rem;opacity:.85">University menu • recipes • sustainability</div>
-      </div>
-    </div>
+    <h1>GreenPlate</h1>
+    <nav>
+      <a href="#menu">WHAT WE DO</a>
+      <a href="#about">ABOUT US</a>
+      <a href="#getinvolved">GET INVOLVED</a>
+      <a href="#donate">MEMBERSHIP & GIVING</a>
+      <a href="https://wa.me/905066747934" target="_blank">WhatsApp</a>
+      <a href="https://instagram.com/aruzhansabitkyzy" target="_blank">Instagram</a>
+    </nav>
   </div>
 </header>
 
 <main>
-  <div class="hero-art"></div>
-  <div class="grid">
+  <div class="hero"></div>
+
+  <div class="grid" id="menu">
     <section class="card">
-      <h1>Weekly Menu</h1>
-      <p class="meta">Menu content will appear here.</p>
+      <h2>Weekly Menu</h2>
+      <div id="menuContainer"></div>
     </section>
+
+    <aside class="card recipes">
+      <h3>Recipe Details</h3>
+      <div id="recipeDetail" class="meta">Click a dish to view details</div>
+
+      <h3 style="margin-top:20px">Carbon Footprint by Day</h3>
+      <canvas id="carbonChart" height="220"></canvas>
+    </aside>
   </div>
+
+  <section id="about" class="card" style="margin-top:26px">
+    <h2>About GreenPlate</h2>
+    <p>GreenPlate is a sustainability-focused digital menu system for universities.</p>
+  </section>
+
+  <section id="getinvolved" class="card" style="margin-top:26px">
+    <h2>Get involved</h2>
+    <p>Students contribute by improving recipes and sustainability data.</p>
+  </section>
+
+  <section id="donate" class="card" style="margin-top:26px">
+    <h2>Membership & Giving</h2>
+    <p>Future memberships and sustainability funding.</p>
+  </section>
 </main>
 
-<footer style="text-align:center;padding:20px;color:#777">GreenPlate Demo</footer>
+<footer>GreenPlate • University Demo</footer>
+
+<script>
+const RECIPES = {
+  "Domates Çorbası": {title:"Tomato Soup",ingredients:["tomatoes","onion","garlic"],allergens:["none"],calories:140,carbon:0.35,img:"tomato soup"},
+  "Mercimek Çorbası": {title:"Red Lentil Soup",ingredients:["lentils","onion"],allergens:["none"],calories:200,carbon:0.25,img:"lentil soup"},
+  "Tavuk Şiş": {title:"Chicken Shish",ingredients:["chicken","spices"],allergens:["none"],calories:350,carbon:0.9,img:"chicken skewers"},
+  "Pirinç Pilavı": {title:"Rice Pilaf",ingredients:["rice","butter"],allergens:["none"],calories:200,carbon:0.15,img:"rice pilaf"},
+  "Profiterol": {title:"Profiterole",ingredients:["flour","egg","cream"],allergens:["gluten","egg","milk"],calories:320,carbon:0.7,img:"profiterole"}
+};
+
+const MENU = {
+  "MONDAY": ["Domates Çorbası","Tavuk Şiş","Pirinç Pilavı","Profiterol"],
+  "TUESDAY": ["Mercimek Çorbası","Tavuk Şiş","Pirinç Pilavı","Profiterol"]
+};
+
+const menuContainer = document.getElementById("menuContainer");
+const recipeDetail = document.getElementById("recipeDetail");
+
+Object.entries(MENU).forEach(([day,dishes])=>{
+  const block = document.createElement("div");
+  block.className = "menu-day";
+  block.innerHTML = `<h3>${day}</h3>`;
+
+  dishes.forEach(d=>{
+    const el = document.createElement("div");
+    el.className = "dish";
+    el.innerText = RECIPES[d].title;
+    el.onclick = ()=>showRecipe(d);
+    block.appendChild(el);
+  });
+
+  menuContainer.appendChild(block);
+});
+
+function showRecipe(key){
+  const r = RECIPES[key];
+  const img = `https://source.unsplash.com/800x600/?${r.img}`;
+  recipeDetail.innerHTML = `
+    <img src="${img}">
+    <h3>${r.title}</h3>
+    <p><b>Ingredients:</b> ${r.ingredients.join(", ")}</p>
+    <p><b>Allergens:</b> ${r.allergens.join(", ")}</p>
+    <p><b>Calories:</b> ${r.calories} kcal</p>
+    <p><b>Carbon footprint:</b> ${r.carbon} kg CO₂e</p>
+  `;
+}
+
+const labels = Object.keys(MENU);
+const data = labels.map(day =>
+  MENU[day].reduce((sum,d)=>sum + RECIPES[d].carbon,0)
+);
+
+new Chart(document.getElementById('carbonChart'),{
+  type:'bar',
+  data:{labels:labels,datasets:[{label:'kg CO₂e per Day',data:data}]},
+  options:{responsive:true}
+});
+</script>
+
 </body>
 </html>
