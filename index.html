@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GreenPlate — Weekly University Menu</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Chart.js for Carbon Footprint Graph -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root{--accent:#2f8f4a;--gold:#b89b5e;--bg:#f4f6f4;--dark:#1e2b24}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:#111;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif}
+    header{background:linear-gradient(120deg,#203a2f,#2f8f4a);color:white;padding:28px;position:relative;overflow:hidden}
+    header::after{content:"";position:absolute;inset:0;background:url("https://images.unsplash.com/painting?auto=format&fit=crop&w=1400&q=80");opacity:.15}
+    .header-inner{position:relative;z-index:1;max-width:1200px;margin:0 auto}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:64px;height:64px;background:linear-gradient(145deg,#3dbb6a,#1f6f42);border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem}
+    nav{margin-top:18px;display:flex;gap:20px;flex-wrap:wrap}
+    nav a{color:white;text-decoration:none;font-weight:600;letter-spacing:.5px}
+    main{padding:32px;max-width:1200px;margin:0 auto}
+    .hero-art{width:100%;height:240px;border-radius:20px;background:url("https://images.unsplash.com/food-art?auto=format&fit=crop&w=1400&q=80") center/cover;margin-bottom:32px}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:28px}
+    .card{background:white;border-radius:22px;padding:22px;box-shadow:0 10px 28px rgba(15,15,15,0.08)}
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo">GP</div>
+      <div>
+        <div style="font-weight:700;font-size:1.25rem">GreenPlate</div>
+        <div style="font-size:.9rem;opacity:.85">University menu • recipes • sustainability</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="hero-art"></div>
+  <div class="grid">
+    <section class="card">
+      <h1>Weekly Menu</h1>
+      <p class="meta">Menu content will appear here.</p>
+    </section>
+  </div>
+</main>
+
+<footer style="text-align:center;padding:20px;color:#777">GreenPlate Demo</footer>
+</body>
+</html>
