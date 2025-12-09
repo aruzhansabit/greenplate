@@ -1,154 +1,376 @@
 <!doctype html>
 <html lang="en">
+<!-- Language Toggle Support: EN / TR -->
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>GreenPlate — Weekly University Menu</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <title>GreenPlate — Antalya Bilim University</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.7.107/pdf.min.js"></script>
   <style>
-    :root{--accent:#2f8f4a;--gold:#b89b5e;--bg:#f4f6f4;--dark:#1e2b24}
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:#111;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif}
-
-    header{background:linear-gradient(120deg,#203a2f,#2f8f4a);color:white;padding:28px}
-    .header-inner{max-width:1200px;margin:0 auto}
-    nav{margin-top:18px;display:flex;gap:20px;flex-wrap:wrap}
-    nav a{color:white;text-decoration:none;font-weight:600}
-
-    main{padding:32px;max-width:1200px;margin:0 auto}
-
-    .hero{background:url("https://images.unsplash.com/food?auto=format&fit=crop&w=1400&q=80") center/cover;height:260px;border-radius:20px;margin-bottom:32px}
-
-    .grid{display:grid;grid-template-columns:1fr 380px;gap:28px}
-    .card{background:white;border-radius:22px;padding:22px;box-shadow:0 10px 28px rgba(15,15,15,0.08)}
-
-    h1,h2,h3{font-family:"Playfair Display",serif}
-
-    .menu-day{margin-bottom:16px}
-    .dish{padding:8px 0;border-bottom:1px dashed #ddd;cursor:pointer}
-    .dish:hover{color:var(--accent)}
-
-    .meta{font-size:.9rem;color:#777}
-
-    .recipes img{width:100%;height:200px;object-fit:cover;border-radius:14px;margin-bottom:10px}
-
-    footer{text-align:center;margin-top:40px;color:#777}
-
-    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+    :root{--accent:#2d9f6a;--muted:#6b7280;--bg:#f8faf9}
+    *{box-sizing:border-box;font-family:Inter,system-ui,Arial}
+    body{margin:0;background:var(--bg);color:#0f172a}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:white;box-shadow:0 2px 8px rgba(12,18,20,.06)}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:64px;height:64px;border-radius:8px;background:#eef7f1;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+    nav{display:flex;gap:14px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:8px}
+    nav a:hover{background:#eef2f6;color:#0b1220}
+    .container{max-width:1200px;margin:28px auto;padding:0 18px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .card{background:white;padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,.06)}
+    h2{margin:0 0 12px}
+    #pdfFrame{width:100%;height:240px;border-radius:8px;border:1px solid #e6edf0}
+    .menu-list{margin-top:12px}
+    .day{padding:10px;border-bottom:1px dashed #eef2f6;display:flex;justify-content:space-between;align-items:center}
+    .day strong{display:block}
+    .dish{cursor:pointer;color:var(--accent);text-decoration:underline}
+    .social-fixed{position:fixed;right:12px;top:40%;display:flex;flex-direction:column;gap:10px}
+    .sbtn{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:999px;background:white;box-shadow:0 6px 18px rgba(2,6,23,.08);text-decoration:none;color:#0f172a}
+    .sbtn img{width:20px;height:20px}
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+    .gallery img{width:100%;height:80px;object-fit:cover;border-radius:8px}
+    .recipes{margin-top:12px}
+    footer{padding:20px;text-align:center;color:var(--muted);font-size:13px;margin-top:28px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr} .social-fixed{right:8px;top:auto;bottom:16px;flex-direction:row}}
   </style>
 </head>
 <body>
-
-<header>
-  <div class="header-inner">
-    <h1>GreenPlate</h1>
+  <header>
+    <div class="brand">
+      <div class="logo" id="siteLogo">GB</div>
+      <div>
+        <div style="font-weight:700">GreenPlate — Antalya Bilim University</div>
+        <div style="font-size:13px;color:var(--muted)">Weekly menu — automatically updated from PDF</div>
+      </div>
+    </div>
     <nav>
-      <a href="#menu">WHAT WE DO</a>
-      <a href="#about">ABOUT US</a>
-      <a href="#getinvolved">GET INVOLVED</a>
-      <a href="#donate">MEMBERSHIP & GIVING</a>
-      <a href="https://wa.me/905066747934" target="_blank">WhatsApp</a>
-      <a href="https://instagram.com/aruzhansabitkyzy" target="_blank">Instagram</a>
+      <select id="langSelect" style="padding:6px 10px;border-radius:8px;border:1px solid #e6eef2">
+        <option value="en">EN</option>
+        <option value="tr">TR</option>
+      </select>
+      <a href="#menu">Weekly Menu</a>
+      <a href="#sustainability">Sustainability</a>
+      <a href="#recipes">Recipes</a>
+      <a href="#gallery">Gallery</a>
+      <!-- members & giving removed by design -->
     </nav>
+  </header>
+
+  <div class="container">
+    <div class="grid">
+      <main>
+        <section class="card" id="pdfSection">
+          <h2>Menu Source (PDF)</h2>
+          <iframe id="pdfFrame" src="" title="weekly menu pdf"></iframe>
+          <div style="margin-top:10px;color:var(--muted);font-size:13px">File: <span id="pdfName"></span> — automatically updates every week.</div>
+          <div class="menu-list card" style="margin-top:14px" id="parsedMenu">
+            <h3>Parsed Weekly Menu</h3>
+            <div id="daysHolder">Loading menu...</div>
+          </div>
+        </section>
+
+        <section class="card" id="sustainability">
+          <h2>Why Sustainability Matters</h2>
+          <p>GreenPlate focuses not only on healthy food but also on reducing carbon footprint. Sustainable nutrition means lowering CO₂e emissions, saving natural resources (water, land), and supporting local producers.</p>
+
+          <h3 style="margin-top:12px">How We Calculate Carbon Footprint</h3>
+          <ol>
+            <li>For each ingredient, an average CO₂e value (kg CO₂ equivalent per kg of product) is used.</li>
+            <li>We calculate the ingredient portion → multiply by CO₂e/kg → sum for the entire dish.</li>
+            <li>We sum all values by days to get the weekly CO₂e footprint of the menu.</li>
+          </ol>
+          <div style="margin-top:12px">
+            <label>Sample calculator (enter number of weekly portions):</label>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <input id="portionsInput" type="number" value="10" min="1" style="padding:8px;border-radius:8px;border:1px solid #e6eef2;width:120px">
+              <button onclick="calcEmission()" style="padding:8px 12px;border-radius:10px;border:none;background:var(--accent);color:white">Calculate CO₂e</button>
+            </div>
+            <div id="emissionResult" style="margin-top:10px;color:var(--muted)"></div>
+            <canvas id="emChart" style="max-width:100%;margin-top:12px"></canvas>
+          </div>
+        </section>
+
+        <section class="card" id="recipes">
+          <h2>Automatic Recipe Generation</h2>
+          <p>Click on any dish in the menu to view the recipe and ingredients. Recipes are generated automatically based on the dish name and predefined templates.</p>
+          <div id="recipeCard" style="display:none;margin-top:8px">
+            <h3 id="rName"></h3>
+            <div id="rIngr" style="color:var(--muted)"></div>
+            <div id="rSteps" style="margin-top:8px"></div>
+          </div>
+        </section>
+
+      </main>
+
+      <aside>
+        <div class="card">
+          <h3>Quick Info</h3>
+          <p style="color:var(--muted)">The PDF updates weekly. We automatically display the menu, generate recipes, and estimate emissions.</p>
+          <div class="gallery" id="gallery">
+            <!-- images -->
+            <img src="https://source.unsplash.com/collection/190727/400x300" alt="food1">
+            <img src="https://source.unsplash.com/collection/190727/401x300" alt="food2">
+            <img src="https://source.unsplash.com/collection/190727/402x300" alt="food3">
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3>Menu Statistics</h3>
+          <canvas id="menuChart" style="width:100%;height:200px"></canvas>
+          <div style="margin-top:10px;color:var(--muted);font-size:13px">Chart by dish categories (soups, meat, sides, etc.)</div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3>University Logo & Name</h3>
+          <p style="color:var(--muted)">Antalya Bilim University — logo can be replaced with the official file.</p>
+          <img id="uniLogo" src="https://via.placeholder.com/200x80?text=Antalya+Bilim+University" alt="uni logo" style="width:100%;border-radius:8px">
+        </div>
+      </aside>
+    </div>
+
+    <footer class="card" style="margin-top:22px">
+      © GreenPlate — Antalya Bilim University. Menu is sourced automatically from the weekly PDF.
+    </footer>
   </div>
-</header>
 
-<main>
-  <div class="hero"></div>
-
-  <div class="grid" id="menu">
-    <section class="card">
-      <h2>Weekly Menu</h2>
-      <div id="menuContainer"></div>
-    </section>
-
-    <aside class="card recipes">
-      <h3>Recipe Details</h3>
-      <div id="recipeDetail" class="meta">Click a dish to view details</div>
-
-      <h3 style="margin-top:20px">Carbon Footprint by Day</h3>
-      <canvas id="carbonChart" height="220"></canvas>
-    </aside>
+  <!-- social fixed -->
+  <div class="social-fixed" aria-hidden>
+    <a class="sbtn" href="https://wa.me/000000000" id="waLink"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg"> WhatsApp</a>
+    <a class="sbtn" href="https://instagram.com/" id="igLink"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg"> Instagram</a>
   </div>
 
-  <section id="about" class="card" style="margin-top:26px">
-    <h2>About GreenPlate</h2>
-    <p>GreenPlate is a sustainability-focused digital menu system for universities.</p>
-  </section>
+  <script>
+    // ----------------- Configuration -----------------
+    const pdfUrl = 'https://admin.antalya.edu.tr/files/418/8_12_25-12_12_25_HAFTALIK_MENU.pdf';
+    // Map common turkish dish names to recipes (add more as needed)
+    const recipeDB = {
+      'Domates Çorbası':{
+        name_en:'Homemade Tomato Soup',
+        name_tr:'Domates Çorbası',
+        ingr_en:['Tomatoes 500 g','Onion 1 pc','Flour 1 tbsp','Olive oil 1 tbsp','Water/stock 1 L','Salt, pepper','Basil for serving'],
+        ingr_tr:['Domates 500 g','Soğan 1 adet','Un 1 yemek kaşığı','Zeytinyağı 1 yemek kaşığı','Su/et suyu 1 L','Tuz, karabiber','Servis için fesleğen'],
+        steps_en:['Sauté onion until soft','Add chopped tomatoes and simmer 5–7 min','Add water/stock and bring to boil','Blend if needed','Thicken slightly with flour, season and serve'],
+        steps_tr:['Soğanı yumuşayana kadar kavurun','Doğranmış domatesi ekleyip 5–7 dk pişirin','Su veya et suyunu ekleyip kaynatın','Gerekirse blenderdan geçirin','Un ile hafif koyulaştırın, baharatlayıp servis edin']
+      },
+      'Mercimek Çorbası':{
+        name_en:'Turkish Red Lentil Soup',
+        name_tr:'Mercimek Çorbası',
+        ingr_en:['Red lentils 200 g','Carrot 1 pc','Onion 1 pc','Olive oil','Tomato paste 1 tbsp','Water 1 L','Salt, lemon'],
+        ingr_tr:['Kırmızı mercimek 200 g','Havuç 1 adet','Soğan 1 adet','Zeytinyağı','Domates salçası 1 yemek kaşığı','Su 1 L','Tuz, limon'],
+        steps_en:['Sauté onion and carrot','Add lentils and tomato paste','Add water and cook 20 min','Blend if desired, season with lemon'],
+        steps_tr:['Soğan ve havucu kavurun','Mercimeği ve salçayı ekleyin','Su ekleyip 20 dk pişirin','İsteğe göre blenderdan geçirin, limonla tatlandırın']
+      },
+      'Domates Çorbası':{
+        name:'Домашний томатный суп (Domates Çorbası)',
+        ingr:['Помидоры 500 г','Лук 1 шт','Мука 1 ст.л.','Оливковое масло 1 ст.л.','Вода/бульон 1 л','Соль, перец','Базилик для подачи'],
+        steps:['Обжарьте лук до прозрака','Добавьте нарезанные помидоры, потомить 5-7 мин','Добавьте воду/бульон, доведите до кипения','При необходимости пробейте блендером','Загустите мукой, посолите, подавайте с базиликом']
+      },
+      'Mercimek Çorbası':{
+        name:'Турецкий чечевичный суп (Mercimek Çorbası)',
+        ingr:['Красная чечевица 200 г','Морковь 1 шт','Лук 1 шт','Оливковое масло','Томатная паста 1 ст.л.','Вода 1 л','Соль, лимон по вкусу'],
+        steps:['Обжарьте лук и морковь','Добавьте чечевицу и томатную пасту','Влейте воду и варите 20 мин','Пюрируйте по желанию, приправьте лимоном']
+      },
+      'Etli Nohut':{name:'Нут с мясом',ingr:['Нут','Говядина кусочками','Лук','Томатная паста','Специи'],steps:['Замочите нут на ночь','Обжарьте мясо и лук','Добавьте нут и специи, томите до готовности']},
+      'Hamsi':{name:'Жареная хамси (мелкая рыба)',ingr:['Хамси','Мука','Соль','Лимон'],steps:['Почистить, обвалять в муке, обжарить в масле до хрустящей корочки']},
+      'Tavuk Şiş':{name:'Шашлычки из курицы (Tavuk Şiş)',ingr:['Курица филе','Маринад (йогурт, специи)','Овощи для подачи'],steps:['Нарезать и замариновать курицу','Нанизать на шампуры и жарить на гриле']}
+    };
 
-  <section id="getinvolved" class="card" style="margin-top:26px">
-    <h2>Get involved</h2>
-    <p>Students contribute by improving recipes and sustainability data.</p>
-  </section>
+    // ----------------- PDF load & parse -----------------
+    const pdfFrame = document.getElementById('pdfFrame');
+    const pdfName = document.getElementById('pdfName');
+    pdfFrame.src = pdfUrl;
+    pdfName.textContent = pdfUrl.split('/').pop();
 
-  <section id="donate" class="card" style="margin-top:26px">
-    <h2>Membership & Giving</h2>
-    <p>Future memberships and sustainability funding.</p>
-  </section>
-</main>
+    // Use PDF.js to extract text
+    async function parsePDF(url){
+      const loadingTask = pdfjsLib.getDocument(url);
+      const pdf = await loadingTask.promise;
+      const page = await pdf.getPage(1);
+      const txt = await page.getTextContent();
+      const strings = txt.items.map(i=>i.str);
+      return strings.join(' ');
+    }
 
-<footer>GreenPlate • University Demo</footer>
+    function splitToDays(text){
+      // crude parser based on observed PDF structure (Turkish weekdays)
+      // Expected: PAZARTESİ SALI ÇARŞAMBA PERŞEMBE CUMA ... items
+      const days = ['PAZARTESİ','SALI','ÇARŞAMBA','PERŞEMBE','CUMA'];
+      const parts = {};
+      // split by day names
+      let rest = text;
+      days.forEach((d,i)=>{
+        const idx = rest.indexOf(d);
+        if(idx>=0){
+          rest = rest.substring(idx+d.length).trim();
+          // next day name
+          const next = days[i+1];
+          const end = next ? rest.indexOf(next) : -1;
+          parts[d]= end>=0 ? rest.substring(0,end).trim() : rest.trim();
+        }
+      });
+      return parts;
+    }
 
-<script>
-const RECIPES = {
-  "Domates Çorbası": {title:"Tomato Soup",ingredients:["tomatoes","onion","garlic"],allergens:["none"],calories:140,carbon:0.35,img:"tomato soup"},
-  "Mercimek Çorbası": {title:"Red Lentil Soup",ingredients:["lentils","onion"],allergens:["none"],calories:200,carbon:0.25,img:"lentil soup"},
-  "Tavuk Şiş": {title:"Chicken Shish",ingredients:["chicken","spices"],allergens:["none"],calories:350,carbon:0.9,img:"chicken skewers"},
-  "Pirinç Pilavı": {title:"Rice Pilaf",ingredients:["rice","butter"],allergens:["none"],calories:200,carbon:0.15,img:"rice pilaf"},
-  "Profiterol": {title:"Profiterole",ingredients:["flour","egg","cream"],allergens:["gluten","egg","milk"],calories:320,carbon:0.7,img:"profiterole"}
-};
+    async function loadMenu(){
+      try{
+        const raw = await parsePDF(pdfUrl);
+        const days = splitToDays(raw);
+        const holder = document.getElementById('daysHolder');
+        holder.innerHTML='';
+        const parsedList = [];
+        Object.keys(days).forEach(dayKey=>{
+          const html = document.createElement('div');
+          html.className='day';
+          const dayName = dayKey;
+          const dishesText = days[dayKey].replace(/\s{2,}/g,' ').trim();
+          // split by spaces and commas - crude but works for simple PDFs
+          const dishes = dishesText.split(/\s(?=[A-ZÇĞİÖŞÜa-zçğıöşü])/).slice(0,6).map(s=>s.trim()).filter(Boolean);
+          parsedList.push({day:dayName,dishes});
+          const left = document.createElement('div');
+          left.innerHTML = `<strong>${dayName}</strong><div style='font-size:13px;color:var(--muted)'>${dishes.join(' · ')}</div>`;
+          const right = document.createElement('div');
+          dishes.forEach(d=>{
+            const span = document.createElement('div');
+            span.innerHTML = `<span class='dish' onclick="showRecipe('${d.replace(/'/g,\"\\'\")}')">${d}</span>`;
+            right.appendChild(span);
+          });
+          html.appendChild(left);
+          holder.appendChild(html);
+        });
 
-const MENU = {
-  "MONDAY": ["Domates Çorbası","Tavuk Şiş","Pirinç Pilavı","Profiterol"],
-  "TUESDAY": ["Mercimek Çorbası","Tavuk Şiş","Pirinç Pilavı","Profiterol"]
-};
+        // build data for menuChart
+        const counts = {};
+        parsedList.forEach(p=>p.dishes.forEach(di=>{
+          const type = detectType(di);
+          counts[type]=(counts[type]||0)+1;
+        }));
+        buildMenuChart(counts);
 
-const menuContainer = document.getElementById("menuContainer");
-const recipeDetail = document.getElementById("recipeDetail");
+      }catch(e){
+        document.getElementById('daysHolder').textContent='Failed to load menu: '+e.message;
+        console.error(e);
+      }
+    }
 
-Object.entries(MENU).forEach(([day,dishes])=>{
-  const block = document.createElement("div");
-  block.className = "menu-day";
-  block.innerHTML = `<h3>${day}</h3>`;
+    function detectType(dishName){
+      const low = dishName.toLowerCase();
+      if(/çorba|soup|çorb/i.test(low)) return 'Soups';
+      if(/tavuk|et|beef|kebab|köfte|kavurma/i.test(low)) return 'Meat Dishes';
+      if(/balık|fish|hamsi/i.test(low)) return 'Fish';
+      return 'Sides / Other';
+    }
 
-  dishes.forEach(d=>{
-    const el = document.createElement("div");
-    el.className = "dish";
-    el.innerText = RECIPES[d].title;
-    el.onclick = ()=>showRecipe(d);
-    block.appendChild(el);
-  });
+    // ----------------- Recipe display -----------------
+    window.showRecipe = function(name){
+      const r = recipeDB[name] || null;
+      const rc = document.getElementById('recipeCard');
+      const lang = currentLang;
+      if(!r){
+        document.getElementById('rName').textContent = name;
+        document.getElementById('rIngr').textContent = lang==='tr' ? 'Malzemeler: Otomatik tarif mevcut değil.' : 'Ingredients: automatic recipe not available.';
+        document.getElementById('rSteps').innerHTML = '';
+        rc.style.display='block';
+        return;
+      }
+      document.getElementById('rName').textContent = lang==='tr' ? r.name_tr : r.name_en;
+      const ingr = lang==='tr' ? r.ingr_tr : r.ingr_en;
+      const steps = lang==='tr' ? r.steps_tr : r.steps_en;
+      document.getElementById('rIngr').textContent = (lang==='tr'?'Malzemeler: ':'Ingredients: ') + ingr.join(', ');
+      document.getElementById('rSteps').innerHTML = '<ol>' + steps.map(s=>`<li>${s}</li>`).join('') + '</ol>';
+      rc.style.display='block';
+    }
 
-  menuContainer.appendChild(block);
-});
+    // ----------------- Emissions calculator & chart -----------------
+    // simple estimation table (kg CO2e per kg) - sample averages
+    const co2db = {
+      'beef':27, 'lamb':39, 'pork':12, 'chicken':6.9, 'fish':6, 'dairy':3.2, 'vegetables':2, 'legumes':2.1, 'grains':1.6
+    };
 
-function showRecipe(key){
-  const r = RECIPES[key];
-  const img = `https://source.unsplash.com/800x600/?${r.img}`;
-  recipeDetail.innerHTML = `
-    <img src="${img}">
-    <h3>${r.title}</h3>
-    <p><b>Ingredients:</b> ${r.ingredients.join(", ")}</p>
-    <p><b>Allergens:</b> ${r.allergens.join(", ")}</p>
-    <p><b>Calories:</b> ${r.calories} kcal</p>
-    <p><b>Carbon footprint:</b> ${r.carbon} kg CO₂e</p>
-  `;
-}
+    function estimateDishEmission(dishName){
+      const n = dishName.toLowerCase();
+      if(/et|beef|kavurma|köfte/.test(n)) return co2db['beef']*0.2;
+      if(/tavuk|chicken/.test(n)) return co2db['chicken']*0.25;
+      if(/balık|fish|hamsi/.test(n)) return co2db['fish']*0.2;
+      if(/mercimek|lentil|çiğ/.test(n)) return co2db['legumes']*0.2;
+      return 0.1; // veg default
+    }
 
-const labels = Object.keys(MENU);
-const data = labels.map(day =>
-  MENU[day].reduce((sum,d)=>sum + RECIPES[d].carbon,0)
-);
+    function calcEmission(){
+      const portions = Number(document.getElementById('portionsInput').value)||1;
+      // gather dishes from parsed list
+      const items = Array.from(document.querySelectorAll('#daysHolder .day .dish')).map(el=>el.textContent);
+      const byType = {};
+      let total=0;
+      items.forEach(it=>{
+        const e = estimateDishEmission(it);
+        total += e * portions;
+        const t = detectType(it);
+        byType[t]=(byType[t]||0)+ e*portions;
+      });
+      document.getElementById('emissionResult').textContent = `Estimated weekly CO₂e for selected dishes: ${total.toFixed(2)} кг CO₂e`;
+      // draw chart
+      const ctx = document.getElementById('emChart').getContext('2d');
+      if(window.emChartObj) window.emChartObj.destroy();
+      window.emChartObj = new Chart(ctx,{
+        type:'doughnut',data:{labels:Object.keys(byType),datasets:[{data:Object.values(byType)}]}
+      });
+    }
 
-new Chart(document.getElementById('carbonChart'),{
-  type:'bar',
-  data:{labels:labels,datasets:[{label:'kg CO₂e per Day',data:data}]},
-  options:{responsive:true}
-});
-</script>
+    // ----------------- Menu Chart -----------------
+    function buildMenuChart(counts){
+      const ctx = document.getElementById('menuChart').getContext('2d');
+      if(window.menuChart) window.menuChart.destroy();
+      window.menuChart = new Chart(ctx,{type:'bar',data:{labels:Object.keys(counts),datasets:[{label:'Number of dishes',data:Object.values(counts)}]}});
+    }
 
+    let currentLang = 'en';
+
+    document.getElementById('langSelect').addEventListener('change', function(){
+      currentLang = this.value;
+      applyLanguage();
+    });
+
+    function applyLanguage(){
+      const dict = {
+        en:{
+          weeklyMenu:'Weekly Menu', recipes:'Recipes', gallery:'Gallery', sustainability:'Sustainability',
+          menuSource:'Menu Source (PDF)', parsedMenu:'Parsed Weekly Menu',
+          sustainabilityTitle:'Why Sustainability Matters', quickInfo:'Quick Info', menuStats:'Menu Statistics',
+          uniBlock:'University Logo & Name', autoRecipes:'Automatic Recipe Generation',
+        },
+        tr:{
+          weeklyMenu:'Haftalık Menü', recipes:'Tarifler', gallery:'Galeri', sustainability:'Sürdürülebilirlik',
+          menuSource:'Menü Kaynağı (PDF)', parsedMenu:'Haftalık Menü (Otomatik)',
+          sustainabilityTitle:'Sürdürülebilirlik Neden Önemli?', quickInfo:'Hızlı Bilgi', menuStats:'Menü İstatistikleri',
+          uniBlock:'Üniversite Logosu ve Adı', autoRecipes:'Otomatik Tarif Oluşturma',
+        }
+      };
+
+      document.querySelector("a[href='#menu']").textContent = dict[currentLang].weeklyMenu;
+      document.querySelector("a[href='#recipes']").textContent = dict[currentLang].recipes;
+      document.querySelector("a[href='#gallery']").textContent = dict[currentLang].gallery;
+      document.querySelector("a[href='#sustainability']").textContent = dict[currentLang].sustainability;
+      document.querySelector('#pdfSection h2').textContent = dict[currentLang].menuSource;
+      document.querySelector('#parsedMenu h3').textContent = dict[currentLang].parsedMenu;
+      document.querySelector('#sustainability h2').textContent = dict[currentLang].sustainabilityTitle;
+      document.querySelector('#recipes h2').textContent = dict[currentLang].autoRecipes;
+      document.querySelector('aside .card h3').textContent = dict[currentLang].quickInfo;
+      document.querySelectorAll('aside .card h3')[1].textContent = dict[currentLang].menuStats;
+      document.querySelectorAll('aside .card h3')[2].textContent = dict[currentLang].uniBlock;
+    }
+
+// ----------------- Init -----------------
+    loadMenu();
+
+    // Update periodically: try reload every 5 minutes (client-side)
+    setInterval(loadMenu,5*60*1000);
+
+  </script>
 </body>
 </html>
