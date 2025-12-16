@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -444,8 +443,8 @@
 <label class="toggle"><input id="filterGlutenFree" type="checkbox"/> <span data-i18n="filter_glutenfree">Gluten-free</span></label>
 <div class="field" style="flex:1; min-width:280px">
 <span data-i18n="source_label">Menu PDF URL</span>
-<input id="pdfUrl" type="text" value="https://admin.antalya.edu.tr/files/418/8_12_25-12_12_25_HAFTALIK_MENU.pdf">
-</input></div>
+<input id="pdfUrl" type="text" value="https://admin.antalya.edu.tr/files/418/8_12_25-12_12_25_HAFTALIK_MENU.pdf"/>
+</div>
 <button class="btn" data-i18n="source_open" id="openPdfBtn">Open PDF</button>
 </div>
 <div class="row" style="padding-top:0">
@@ -498,8 +497,8 @@
 </div>
 <div class="field">
 <span data-i18n="recipes_find">Find dish</span>
-<input id="recipeSearch" placeholder="Search…" type="text">
-</input></div>
+<input id="recipeSearch" placeholder="Search…" type="text"/>
+</div>
 </div>
 <div class="grid" id="recipesGrid"></div>
 </div>
@@ -644,84 +643,79 @@
 </ul>
 </div>
 </div>
-
 <div class="card section">
-  <div class="sectionHead">
-    <div>
-      <h3 data-i18n="meth_app_t">Ingredient-level calculation (summary table)</h3>
-      <p class="lead" data-i18n="meth_app_p">Below is the transparent ingredient-level logic used in GreenPlate. The same steps are applied consistently across dishes for fair comparison.</p>
-    </div>
-  </div>
-
-  <div style="overflow:auto">
-    <table>
-      <thead>
-        <tr>
-          <th data-i18n="meth_tbl1_h1">Field</th>
-          <th data-i18n="meth_tbl1_h2">Meaning</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td><b>Ingredient</b></td><td data-i18n="meth_f_ingredient">Name of the product (e.g., beef, olive oil, rice)</td></tr>
-        <tr><td><b>Quantity</b></td><td data-i18n="meth_f_quantity">Planned amount used (g, ml, pcs, etc.)</td></tr>
-        <tr><td><b>UnitType</b></td><td data-i18n="meth_f_unittype">Unit of measurement (g, kg, L, pcs)</td></tr>
-        <tr><td><b>ParsedKg</b></td><td data-i18n="meth_f_parsed">Quantity converted to kilograms</td></tr>
-        <tr><td><b>Category</b></td><td data-i18n="meth_f_category">Food category (meat, vegetable, oil, dairy, grain, etc.)</td></tr>
-        <tr><td><b>UsedPct</b></td><td data-i18n="meth_f_usedpct">Share of the package actually used in the recipe</td></tr>
-        <tr><td><b>UsedKg</b></td><td data-i18n="meth_f_usedkg">Actual amount used after adjustment</td></tr>
-        <tr><td><b>EF</b></td><td data-i18n="meth_f_ef">Emission factor (kg CO₂e per 1 kg of product)</td></tr>
-        <tr><td><b>CO2e_kg</b></td><td data-i18n="meth_f_co2e">Carbon footprint for this ingredient</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="grid" style="grid-template-columns:repeat(2, 1fr); margin-top:14px">
-    <div class="card" style="padding:14px">
-      <div class="kicker" data-i18n="meth_tbl2_title">Core formulas</div>
-      <div style="overflow:auto">
-        <table>
-          <thead>
-            <tr>
-              <th data-i18n="meth_tbl2_h1">Step</th>
-              <th data-i18n="meth_tbl2_h2">Formula</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td data-i18n="meth_s_convert">Convert to kg</td><td><code>ParsedKg = grams ÷ 1000</code> <span class="muted" data-i18n="meth_or">or</span> <code>ParsedKg = ml × density ÷ 1000</code></td></tr>
-            <tr><td data-i18n="meth_s_adjust">Adjust usage</td><td><code>UsedKg = ParsedKg × UsedPct</code></td></tr>
-            <tr><td data-i18n="meth_s_ing">Ingredient footprint</td><td><code>CO₂e = UsedKg × EF</code></td></tr>
-            <tr><td data-i18n="meth_s_dish">Dish footprint</td><td><code>Dish carbon footprint = Σ CO₂e (all ingredients)</code></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="muted" style="margin-top:10px" data-i18n="meth_density_note">Note: for olive oil, density ≈ 0.91 kg/L (used to convert ml to kg).</p>
-    </div>
-
-    <div class="card" style="padding:14px">
-      <div class="kicker" data-i18n="meth_ex_title">Example: Olive oil</div>
-      <div style="overflow:auto">
-        <table>
-          <thead>
-            <tr>
-              <th data-i18n="meth_tbl3_h1">Parameter</th>
-              <th data-i18n="meth_tbl3_h2">Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td data-i18n="meth_ex_qty">Quantity</td><td>50 ml</td></tr>
-            <tr><td data-i18n="meth_ex_parsed">ParsedKg</td><td>50 × 0.91 ÷ 1000 = <b>0.0455 kg</b></td></tr>
-            <tr><td data-i18n="meth_ex_usedpct">UsedPct</td><td>5%</td></tr>
-            <tr><td data-i18n="meth_ex_usedkg">UsedKg</td><td>0.0455 × 0.05 = <b>0.002275 kg</b></td></tr>
-            <tr><td>EF</td><td>5.4 kg CO₂e/kg</td></tr>
-            <tr><td><b>CO₂e</b></td><td>0.002275 × 5.4 = <b>0.0123 kg CO₂e</b></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="muted" style="margin-top:10px" data-i18n="meth_ex_note">This prevents overestimating emissions when only a small part of a packaged ingredient is used.</p>
-    </div>
-  </div>
+<div class="sectionHead">
+<div>
+<h3 data-i18n="meth_app_t">Ingredient-level calculation (summary table)</h3>
+<p class="lead" data-i18n="meth_app_p">Below is the transparent ingredient-level logic used in GreenPlate. The same steps are applied consistently across dishes for fair comparison.</p>
 </div>
-
+</div>
+<div style="overflow:auto">
+<table>
+<thead>
+<tr>
+<th data-i18n="meth_tbl1_h1">Field</th>
+<th data-i18n="meth_tbl1_h2">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><b>Ingredient</b></td><td data-i18n="meth_f_ingredient">Name of the product (e.g., beef, olive oil, rice)</td></tr>
+<tr><td><b>Quantity</b></td><td data-i18n="meth_f_quantity">Planned amount used (g, ml, pcs, etc.)</td></tr>
+<tr><td><b>UnitType</b></td><td data-i18n="meth_f_unittype">Unit of measurement (g, kg, L, pcs)</td></tr>
+<tr><td><b>ParsedKg</b></td><td data-i18n="meth_f_parsed">Quantity converted to kilograms</td></tr>
+<tr><td><b>Category</b></td><td data-i18n="meth_f_category">Food category (meat, vegetable, oil, dairy, grain, etc.)</td></tr>
+<tr><td><b>UsedPct</b></td><td data-i18n="meth_f_usedpct">Share of the package actually used in the recipe</td></tr>
+<tr><td><b>UsedKg</b></td><td data-i18n="meth_f_usedkg">Actual amount used after adjustment</td></tr>
+<tr><td><b>EF</b></td><td data-i18n="meth_f_ef">Emission factor (kg CO₂e per 1 kg of product)</td></tr>
+<tr><td><b>CO2e_kg</b></td><td data-i18n="meth_f_co2e">Carbon footprint for this ingredient</td></tr>
+</tbody>
+</table>
+</div>
+<div class="grid" style="grid-template-columns:repeat(2, 1fr); margin-top:14px">
+<div class="card" style="padding:14px">
+<div class="kicker" data-i18n="meth_tbl2_title">Core formulas</div>
+<div style="overflow:auto">
+<table>
+<thead>
+<tr>
+<th data-i18n="meth_tbl2_h1">Step</th>
+<th data-i18n="meth_tbl2_h2">Formula</th>
+</tr>
+</thead>
+<tbody>
+<tr><td data-i18n="meth_s_convert">Convert to kg</td><td><code>ParsedKg = grams ÷ 1000</code> <span class="muted" data-i18n="meth_or">or</span> <code>ParsedKg = ml × density ÷ 1000</code></td></tr>
+<tr><td data-i18n="meth_s_adjust">Adjust usage</td><td><code>UsedKg = ParsedKg × UsedPct</code></td></tr>
+<tr><td data-i18n="meth_s_ing">Ingredient footprint</td><td><code>CO₂e = UsedKg × EF</code></td></tr>
+<tr><td data-i18n="meth_s_dish">Dish footprint</td><td><code>Dish carbon footprint = Σ CO₂e (all ingredients)</code></td></tr>
+</tbody>
+</table>
+</div>
+<p class="muted" data-i18n="meth_density_note" style="margin-top:10px">Note: for olive oil, density ≈ 0.91 kg/L (used to convert ml to kg).</p>
+</div>
+<div class="card" style="padding:14px">
+<div class="kicker" data-i18n="meth_ex_title">Example: Olive oil</div>
+<div style="overflow:auto">
+<table>
+<thead>
+<tr>
+<th data-i18n="meth_tbl3_h1">Parameter</th>
+<th data-i18n="meth_tbl3_h2">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr><td data-i18n="meth_ex_qty">Quantity</td><td>50 ml</td></tr>
+<tr><td data-i18n="meth_ex_parsed">ParsedKg</td><td>50 × 0.91 ÷ 1000 = <b>0.0455 kg</b></td></tr>
+<tr><td data-i18n="meth_ex_usedpct">UsedPct</td><td>5%</td></tr>
+<tr><td data-i18n="meth_ex_usedkg">UsedKg</td><td>0.0455 × 0.05 = <b>0.002275 kg</b></td></tr>
+<tr><td>EF</td><td>5.4 kg CO₂e/kg</td></tr>
+<tr><td><b>CO₂e</b></td><td>0.002275 × 5.4 = <b>0.0123 kg CO₂e</b></td></tr>
+</tbody>
+</table>
+</div>
+<p class="muted" data-i18n="meth_ex_note" style="margin-top:10px">This prevents overestimating emissions when only a small part of a packaged ingredient is used.</p>
+</div>
+</div>
+</div>
 </section>
 <!-- WHAT WE DO -->
 <section class="page" id="page-what">
@@ -1892,8 +1886,8 @@ document.addEventListener("DOMContentLoaded", tryLoadMenuJson);
   renderChart();
   showPage(currentRoute());
 </script>
+<script>window.addEventListener('DOMContentLoaded', ()=>{
 
-<script>
 /* Mobile drawer navigation (fix): open/close hamburger menu */
 (function(){
   const btnOpen = document.getElementById('mobOpen');
@@ -1929,7 +1923,8 @@ document.addEventListener("DOMContentLoaded", tryLoadMenuJson);
     }
   });
 })();
-</script>
 
+});
+</script>
 </body>
 </html>
