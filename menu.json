@@ -1,0 +1,28 @@
+{
+  "updated_at": "2025-12-16T12:48:28.168404Z",
+  "pdf_filename": "menu.pdf",
+  "note": "Pilot auto-update: PDF downloaded by GitHub Actions. Parsing can be added next.",
+  "days": {
+    "Monday": [
+      "(Auto) Menu will be parsed from PDF"
+    ],
+    "Tuesday": [
+      "(Auto) Menu will be parsed from PDF"
+    ],
+    "Wednesday": [
+      "(Auto) Menu will be parsed from PDF"
+    ],
+    "Thursday": [
+      "(Auto) Menu will be parsed from PDF"
+    ],
+    "Friday": [
+      "(Auto) Menu will be parsed from PDF"
+    ],
+    "Saturday": [
+      "(Auto) Menu will be parsed from PDF"
+    ],
+    "Sunday": [
+      "(Auto) Menu will be parsed from PDF"
+    ]
+  }
+}
