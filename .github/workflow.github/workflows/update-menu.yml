@@ -1,0 +1,50 @@
+name: Update weekly menu (pilot)
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # every Monday 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download weekly menu PDF
+        run: |
+          curl -L -o menu.pdf "https://admin.antalya.edu.tr/files/418/8_12_25-12_12_25_HAFTALIK_MENU.pdf"
+
+      - name: Generate menu.json (pilot placeholder)
+        run: |
+          python - << 'PY'
+          import json, datetime
+          data = {
+            "updated_at": datetime.datetime.utcnow().isoformat() + "Z",
+            "pdf_filename": "menu.pdf",
+            "note": "Pilot auto-update: PDF downloaded by GitHub Actions. Parsing can be added next.",
+            "days": {
+              "Monday": ["(Auto) Menu will be parsed from PDF"],
+              "Tuesday": ["(Auto) Menu will be parsed from PDF"],
+              "Wednesday": ["(Auto) Menu will be parsed from PDF"],
+              "Thursday": ["(Auto) Menu will be parsed from PDF"],
+              "Friday": ["(Auto) Menu will be parsed from PDF"],
+              "Saturday": ["(Auto) Menu will be parsed from PDF"],
+              "Sunday": ["(Auto) Menu will be parsed from PDF"]
+            }
+          }
+          with open("menu.json","w",encoding="utf-8") as f:
+            json.dump(data,f,ensure_ascii=False,indent=2)
+          PY
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add menu.json menu.pdf || true
+          git commit -m "Auto-update menu assets" || echo "Nothing to commit"
+          git push
