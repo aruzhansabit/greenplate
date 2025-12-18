@@ -1,9 +1,9 @@
-name: Update weekly menu (pilot)
+name: Update weekly menu (real parse)
 
 on:
-  schedule:
-    - cron: "0 6 * * 1"   # every Monday 06:00 UTC
   workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"  # every Monday 06:00 UTC
 
 permissions:
   contents: write
@@ -15,36 +15,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 pdfplumber
+
+      - name: Find latest cafeteria PDF URL
+        run: |
+          python find_latest_pdf_v2.py > pdf_url.txt
+          echo "PDF_URL=$(cat pdf_url.txt)" >> $GITHUB_ENV
+
       - name: Download weekly menu PDF
         run: |
-          curl -L -o menu.pdf "https://admin.antalya.edu.tr/files/418/8_12_25-12_12_25_HAFTALIK_MENU.pdf"
+          echo "Downloading: $PDF_URL"
+          curl -L -o menu.pdf "$PDF_URL"
 
-      - name: Generate menu.json (pilot placeholder)
+      - name: Parse PDF to menu.json (Mon–Fri)
         run: |
-          python - << 'PY'
-          import json, datetime
-          data = {
-            "updated_at": datetime.datetime.utcnow().isoformat() + "Z",
-            "pdf_filename": "menu.pdf",
-            "note": "Pilot auto-update: PDF downloaded by GitHub Actions. Parsing can be added next.",
-            "days": {
-              "Monday": ["(Auto) Menu will be parsed from PDF"],
-              "Tuesday": ["(Auto) Menu will be parsed from PDF"],
-              "Wednesday": ["(Auto) Menu will be parsed from PDF"],
-              "Thursday": ["(Auto) Menu will be parsed from PDF"],
-              "Friday": ["(Auto) Menu will be parsed from PDF"],
-              "Saturday": ["(Auto) Menu will be parsed from PDF"],
-              "Sunday": ["(Auto) Menu will be parsed from PDF"]
-            }
-          }
-          with open("menu.json","w",encoding="utf-8") as f:
-            json.dump(data,f,ensure_ascii=False,indent=2)
-          PY
+          python parse_menu_v2.py menu.pdf menu.json
 
-      - name: Commit changes
+      - name: Commit updated files
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add menu.json menu.pdf || true
-          git commit -m "Auto-update menu assets" || echo "Nothing to commit"
+          git config user.name "actions-user"
+          git config user.email "actions@users.noreply.github.com"
+          git add menu.pdf menu.json
+          git commit -m "Auto-update menu (real parse)" || echo "No changes to commit"
           git push
