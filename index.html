@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -6,7 +7,7 @@
 <title>GreenPlate — Smart campus menu</title>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
     :root{
       --bg:#f6fbf8;
@@ -874,1057 +875,186 @@
 </div>
 </div>
 </div>
+
+
+
 <script>
-  // =============================
-  // Data model (demo) with TR/EN/RU
-  // =============================
-  let MENU = {
-    "Monday": [
-      {
-        id: "lentil_soup",
-        name: { en: "Lentil Soup", tr: "Mercimek Çorbası", ru: "Чечевичный суп" },
-        description: {
-          en: "Classic lentil soup with mild spices.",
-          tr: "Hafif baharatlarla klasik mercimek çorbası.",
-          ru: "Классический суп из чечевицы с мягкими специями."
-        },
-        calories_kcal: 180,
-        co2_kg: 0.65,
-        allergens: {
-          en: ["None (check kitchen cross-contact)"],
-          tr: ["Yok (mutfak çapraz bulaşma olabilir)"],
-          ru: ["Нет (возможен перекрёстный контакт на кухне)"]
-        },
-        ingredients: {
-          en: ["Red lentils", "Onion", "Carrot", "Tomato paste", "Olive oil", "Spices", "Salt"],
-          tr: ["Kırmızı mercimek", "Soğan", "Havuç", "Domates salçası", "Zeytinyağı", "Baharatlar", "Tuz"],
-          ru: ["Красная чечевица", "Лук", "Морковь", "Томатная паста", "Оливковое масло", "Специи", "Соль"]
-        },
-        macros_g: { protein: 10, carbs: 26, fat: 4 },
-        recipe_steps: {
-          en: ["Rinse lentils.", "Sauté onion/carrot.", "Add lentils + water, simmer.", "Blend, season and serve."],
-          tr: ["Mercimeği yıkayın.", "Soğan/havuç soteleyin.", "Mercimek + su ekleyip pişirin.", "Blenderdan geçirip servis edin."],
-          ru: ["Промойте чечевицу.", "Обжарьте лук/морковь.", "Добавьте чечевицу + воду и варите.", "Пюрируйте, приправьте и подавайте."]
-        }
-      },
-      {
-        id: "chicken_rice",
-        name: { en: "Chicken with Rice", tr: "Tavuk Pilav", ru: "Курица с рисом" },
-        description: {
-          en: "Roasted chicken served with rice pilaf.",
-          tr: "Pilav ile servis edilen fırınlanmış tavuk.",
-          ru: "Запечённая курица с рисовым пловом."
-        },
-        calories_kcal: 520,
-        co2_kg: 2.40,
-        allergens: {
-          en: ["May contain gluten (kitchen)", "May contain dairy (kitchen)"],
-          tr: ["Gluten içerebilir (mutfak)", "Süt ürünü içerebilir (mutfak)"],
-          ru: ["Может содержать глютен (кухня)", "Может содержать молочные продукты (кухня)"]
-        },
-        ingredients: {
-          en: ["Chicken", "Rice", "Butter (optional)", "Broth", "Salt", "Pepper"],
-          tr: ["Tavuk", "Pirinç", "Tereyağı (opsiyonel)", "Et suyu", "Tuz", "Karabiber"],
-          ru: ["Курица", "Рис", "Сливочное масло (по желанию)", "Бульон", "Соль", "Перец"]
-        },
-        macros_g: { protein: 32, carbs: 58, fat: 16 },
-        recipe_steps: {
-          en: ["Cook rice in broth.", "Roast or grill chicken.", "Serve together; adjust seasoning."],
-          tr: ["Pilavı et suyuyla pişirin.", "Tavuğu fırınlayın veya ızgara yapın.", "Birlikte servis edin."],
-          ru: ["Приготовьте рис на бульоне.", "Запеките или обжарьте курицу.", "Подавайте вместе, отрегулируйте специи."]
-        }
-      },
-      {
-        id: "season_salad",
-        name: { en: "Seasonal Salad", tr: "Mevsim Salata", ru: "Сезонный салат" },
-        description: {
-          en: "Fresh greens, tomato, cucumber, lemon dressing.",
-          tr: "Taze yeşillikler, domates, salatalık, limon sosu.",
-          ru: "Свежая зелень, помидор, огурец, лимонная заправка."
-        },
-        calories_kcal: 140,
-        co2_kg: 0.25,
-        allergens: { en: ["None"], tr: ["Yok"], ru: ["Нет"] },
-        ingredients: {
-          en: ["Lettuce", "Tomato", "Cucumber", "Lemon", "Olive oil", "Salt"],
-          tr: ["Marul", "Domates", "Salatalık", "Limon", "Zeytinyağı", "Tuz"],
-          ru: ["Салат-латук", "Помидор", "Огурец", "Лимон", "Оливковое масло", "Соль"]
-        },
-        macros_g: { protein: 3, carbs: 12, fat: 9 },
-        recipe_steps: {
-          en: ["Chop vegetables.", "Mix dressing.", "Toss and serve."],
-          tr: ["Sebzeleri doğrayın.", "Sosu karıştırın.", "Harmanlayıp servis edin."],
-          ru: ["Нарежьте овощи.", "Смешайте заправку.", "Перемешайте и подавайте."]
-        }
-      }
-    ],
-    "Tuesday": [
-      {
-        id: "tomato_soup",
-        name: { en: "Tomato Soup", tr: "Domates Çorbası", ru: "Томатный суп" },
-        description: {
-          en: "Tomato soup; can be made dairy-free.",
-          tr: "Domates çorbası; süt ürünsüz yapılabilir.",
-          ru: "Томатный суп; можно приготовить без молочных продуктов."
-        },
-        calories_kcal: 210,
-        co2_kg: 0.55,
-        allergens: {
-          en: ["Dairy (if cream is used)"],
-          tr: ["Süt ürünü (krema kullanılırsa)"],
-          ru: ["Молочные продукты (если используется сливки)"]
-        },
-        ingredients: {
-          en: ["Tomatoes", "Onion", "Garlic", "Olive oil", "Stock", "Cream (optional)"],
-          tr: ["Domates", "Soğan", "Sarımsak", "Zeytinyağı", "Et suyu", "Krema (opsiyonel)"],
-          ru: ["Помидоры", "Лук", "Чеснок", "Оливковое масло", "Бульон", "Сливки (по желанию)"]
-        },
-        macros_g: { protein: 5, carbs: 28, fat: 8 },
-        recipe_steps: {
-          en: ["Sauté aromatics.", "Add tomatoes + stock, simmer.", "Blend. Add cream if desired."],
-          tr: ["Soğan-sarımsağı soteleyin.", "Domates + et suyu ekleyip pişirin.", "Blenderdan geçirip isterseniz krema ekleyin."],
-          ru: ["Обжарьте лук и чеснок.", "Добавьте помидоры и бульон, варите.", "Пюрируйте, при желании добавьте сливки."]
-        }
-      },
-      {
-        id: "vegetable_pasta",
-        name: { en: "Vegetable Pasta", tr: "Sebzeli Makarna", ru: "Паста с овощами" },
-        description: {
-          en: "Pasta with mixed vegetables.",
-          tr: "Karışık sebzeli makarna.",
-          ru: "Паста с ассорти из овощей."
-        },
-        calories_kcal: 460,
-        co2_kg: 1.10,
-        allergens: { en: ["Gluten"], tr: ["Gluten"], ru: ["Глютен"] },
-        ingredients: {
-          en: ["Pasta", "Zucchini", "Bell pepper", "Tomato sauce", "Olive oil"],
-          tr: ["Makarna", "Kabak", "Biber", "Domates sosu", "Zeytinyağı"],
-          ru: ["Паста", "Кабачок", "Болгарский перец", "Томатный соус", "Оливковое масло"]
-        },
-        macros_g: { protein: 14, carbs: 72, fat: 10 },
-        recipe_steps: {
-          en: ["Boil pasta.", "Sauté vegetables.", "Mix with sauce and pasta."],
-          tr: ["Makarnayı haşlayın.", "Sebzeleri soteleyin.", "Sos ve makarnayla karıştırın."],
-          ru: ["Отварите пасту.", "Обжарьте овощи.", "Смешайте с соусом и пастой."]
-        }
-      }
-    ],
-    "Wednesday": [
-      {
-        id: "beans_stew",
-        name: { en: "White Beans Stew", tr: "Kuru Fasulye", ru: "Тушёная фасоль" },
-        description: {
-          en: "Traditional bean stew with tomato base.",
-          tr: "Domates bazlı geleneksel kuru fasulye.",
-          ru: "Традиционное блюдо из фасоли в томатной основе."
-        },
-        calories_kcal: 480,
-        co2_kg: 0.95,
-        allergens: {
-          en: ["May contain gluten (kitchen)"],
-          tr: ["Gluten içerebilir (mutfak)"],
-          ru: ["Может содержать глютен (кухня)"]
-        },
-        ingredients: {
-          en: ["White beans", "Onion", "Tomato paste", "Olive oil", "Spices"],
-          tr: ["Kuru fasulye", "Soğan", "Domates salçası", "Zeytinyağı", "Baharatlar"],
-          ru: ["Белая фасоль", "Лук", "Томатная паста", "Оливковое масло", "Специи"]
-        },
-        macros_g: { protein: 20, carbs: 68, fat: 9 },
-        recipe_steps: {
-          en: ["Soak beans overnight.", "Simmer until tender.", "Cook with onion + tomato paste; season."],
-          tr: ["Fasulyeyi bir gece suda bekletin.", "Yumuşayana kadar pişirin.", "Soğan + salçayla pişirip baharatlayın."],
-          ru: ["Замочите фасоль на ночь.", "Варите до мягкости.", "Тушите с луком и томатной пастой, приправьте."]
-        }
-      },
-      {
-        id: "yogurt",
-        name: { en: "Yogurt Cup", tr: "Yoğurt", ru: "Йогурт" },
-        description: {
-          en: "Plain yogurt.",
-          tr: "Sade yoğurt.",
-          ru: "Натуральный йогурт."
-        },
-        calories_kcal: 160,
-        co2_kg: 0.45,
-        allergens: { en: ["Dairy"], tr: ["Süt ürünü"], ru: ["Молочные продукты"] },
-        ingredients: {
-          en: ["Milk", "Yogurt cultures"],
-          tr: ["Süt", "Yoğurt kültürü"],
-          ru: ["Молоко", "Закваска"]
-        },
-        macros_g: { protein: 9, carbs: 12, fat: 8 },
-        recipe_steps: {
-          en: ["Chill and serve."],
-          tr: ["Soğutup servis edin."],
-          ru: ["Охладите и подавайте."]
-        }
-      }
-    ],
+(() => {
+  const PAGES = ["home","menu","recipes","sustainability","what","about","method","getinvolved"];
+  const PAGE_IDS = PAGES.map(p => `page-${p}`);
 
-    "Thursday": [
-      {
-        id: "chickpea_stew",
-        name: { en: "Chickpea Stew", tr: "Nohut Yemeği", ru: "Нут (тушёный)" },
-        description: { en: "Hearty chickpea stew in tomato base.", tr: "Domates bazlı doyurucu nohut yemeği.", ru: "Сытное блюдо из нута в томатной основе." },
-        calories_kcal: 510, co2_kg: 0.85,
-        allergens: { en: ["May contain gluten (kitchen)"], tr: ["Gluten içerebilir (mutfak)"], ru: ["Может содержать глютен (кухня)"] },
-        ingredients: { en: ["Chickpeas","Onion","Tomato paste","Olive oil","Spices","Salt"], tr: ["Nohut","Soğan","Domates salçası","Zeytinyağı","Baharatlar","Tuz"], ru: ["Нут","Лук","Томатная паста","Оливковое масло","Специи","Соль"] },
-        macros_g: { protein: 20, carbs: 70, fat: 10 },
-        recipe_steps: { en: ["Soak chickpeas overnight.","Simmer until tender.","Cook with onion + tomato paste; season."], tr: ["Nohutu bir gece suda bekletin.","Yumuşayana kadar pişirin.","Soğan + salçayla pişirip baharatlayın."], ru: ["Замочите нут на ночь.","Варите до мягкости.","Тушите с луком и томатной пастой, приправьте."] }
-      },
-      {
-        id: "bulgur_pilaf",
-        name: { en: "Bulgur Pilaf", tr: "Bulgur Pilavı", ru: "Булгур-плов" },
-        description: { en: "Bulgur pilaf with tomato and herbs.", tr: "Domatesli ve otlu bulgur pilavı.", ru: "Булгур с томатом и зеленью." },
-        calories_kcal: 380, co2_kg: 0.60,
-        allergens: { en: ["Gluten"], tr: ["Gluten"], ru: ["Глютен"] },
-        ingredients: { en: ["Bulgur","Tomato","Onion","Olive oil","Herbs","Salt"], tr: ["Bulgur","Domates","Soğan","Zeytinyağı","Otlar","Tuz"], ru: ["Булгур","Помидор","Лук","Оливковое масло","Зелень","Соль"] },
-        macros_g: { protein: 10, carbs: 72, fat: 8 },
-        recipe_steps: { en: ["Sauté onion.","Add bulgur and tomato.","Add water and cook until tender."], tr: ["Soğanı soteleyin.","Bulgur ve domatesi ekleyin.","Su ekleyip pişirin."], ru: ["Обжарьте лук.","Добавьте булгур и томат.","Добавьте воду и готовьте до мягкости."] }
-      }
-    ],
-    "Friday": [
-      {
-        id: "fish_veg",
-        name: { en: "Baked Fish with Vegetables", tr: "Fırında Balık & Sebze", ru: "Запечённая рыба с овощами" },
-        description: { en: "Oven-baked fish served with seasonal vegetables.", tr: "Mevsim sebzeleriyle fırında balık.", ru: "Рыба, запечённая с сезонными овощами." },
-        calories_kcal: 470, co2_kg: 1.60,
-        allergens: { en: ["Fish"], tr: ["Balık"], ru: ["Рыба"] },
-        ingredients: { en: ["Fish","Zucchini","Carrot","Lemon","Olive oil","Salt","Pepper"], tr: ["Balık","Kabak","Havuç","Limon","Zeytinyağı","Tuz","Karabiber"], ru: ["Рыба","Кабачок","Морковь","Лимон","Оливковое масло","Соль","Перец"] },
-        macros_g: { protein: 34, carbs: 18, fat: 24 },
-        recipe_steps: { en: ["Season fish and vegetables.","Bake until fish flakes.","Serve with lemon."], tr: ["Balık ve sebzeleri baharatlayın.","Balık pişene kadar fırınlayın.","Limonla servis edin."], ru: ["Приправьте рыбу и овощи.","Запекайте до готовности.","Подавайте с лимоном."] }
-      },
-      {
-        id: "yogurt_cacik",
-        name: { en: "Cacık (Yogurt & Cucumber)", tr: "Cacık", ru: "Джаджык (йогурт с огурцом)" },
-        description: { en: "Cold yogurt side with cucumber and herbs.", tr: "Salatalık ve naneli soğuk yoğurt mezesi.", ru: "Холодный йогуртовый гарнир с огурцом и зеленью." },
-        calories_kcal: 160, co2_kg: 0.45,
-        allergens: { en: ["Dairy"], tr: ["Süt ürünü"], ru: ["Молочные продукты"] },
-        ingredients: { en: ["Yogurt","Cucumber","Garlic","Mint","Salt"], tr: ["Yoğurt","Salatalık","Sarımsak","Nane","Tuz"], ru: ["Йогурт","Огурец","Чеснок","Мята","Соль"] },
-        macros_g: { protein: 9, carbs: 12, fat: 8 },
-        recipe_steps: { en: ["Grate cucumber.","Mix with yogurt, garlic, herbs.","Chill and serve."], tr: ["Salatalığı rendeleyin.","Yoğurt, sarımsak, nane ile karıştırın.","Soğutup servis edin."], ru: ["Натрите огурец.","Смешайте с йогуртом, чесноком и зеленью.","Охладите и подавайте."] }
-      }
-    ],
- tr: ["Yok"], ru: ["Нет"] },
-        ingredients: { en: ["Eggplant","Zucchini","Potato","Tomato","Onion","Olive oil","Salt"], tr: ["Patlıcan","Kabak","Patates","Domates","Soğan","Zeytinyağı","Tuz"], ru: ["Баклажан","Кабачок","Картофель","Помидор","Лук","Оливковое масло","Соль"] },
-        macros_g: { protein: 8, carbs: 52, fat: 16 },
-        recipe_steps: { en: ["Chop vegetables.","Sauté onion.","Add vegetables + tomato; simmer until tender."], tr: ["Sebzeleri doğrayın.","Soğanı soteleyin.","Sebze + domates ekleyip pişirin."], ru: ["Нарежьте овощи.","Обжарьте лук.","Добавьте овощи и томат, тушите до мягкости."] }
-      },
-      {
-        id: "rice_pudding",
-        name: { en: "Rice Pudding", tr: "Sütlaç", ru: "Рисовый пудинг" },
-        description: { en: "Classic milk dessert served chilled.", tr: "Soğuk servis edilen klasik sütlü tatlı.", ru: "Классический молочный десерт, подаётся охлаждённым." },
-        calories_kcal: 280, co2_kg: 0.75,
-        allergens: { en: ["Dairy"], tr: ["Süt ürünü"], ru: ["Молочные продукты"] },
-        ingredients: { en: ["Milk","Rice","Sugar","Vanilla","Cinnamon (optional)"], tr: ["Süt","Pirinç","Şeker","Vanilya","Tarçın (opsiyonel)"], ru: ["Молоко","Рис","Сахар","Ваниль","Корица (по желанию)"] },
-        macros_g: { protein: 7, carbs: 45, fat: 8 },
-        recipe_steps: { en: ["Cook rice until soft.","Add milk and sugar; simmer.","Chill and serve."], tr: ["Pirinç yumuşayana kadar pişirin.","Süt ve şekeri ekleyip kaynatın.","Soğutup servis edin."], ru: ["Варите рис до мягкости.","Добавьте молоко и сахар, варите.","Охладите и подавайте."] }
-      }
-    ],
- tr: ["Yumurta"], ru: ["Яйцо"] },
-        ingredients: { en: ["Eggs","Tomato","Pepper","Onion","Herbs","Oil","Salt"], tr: ["Yumurta","Domates","Biber","Soğan","Otlar","Yağ","Tuz"], ru: ["Яйца","Помидор","Перец","Лук","Зелень","Масло","Соль"] },
-        macros_g: { protein: 22, carbs: 16, fat: 28 },
-        recipe_steps: { en: ["Sauté vegetables.","Add beaten eggs.","Cook until set; serve warm."], tr: ["Sebzeleri soteleyin.","Çırpılmış yumurtayı ekleyin.","Pişirip sıcak servis edin."], ru: ["Обжарьте овощи.","Добавьте взбитые яйца.","Готовьте до схватывания; подавайте тёплым."] }
-      },
-      {
-        id: "fruit_salad",
-        name: { en: "Fruit Salad", tr: "Meyve Salatası", ru: "Фруктовый салат" },
-        description: { en: "Seasonal fruits, served fresh.", tr: "Taze servis edilen mevsim meyveleri.", ru: "Свежие сезонные фрукты." },
-        calories_kcal: 190, co2_kg: 0.30,
-        allergens: { en: ["None"], tr: ["Yok"], ru: ["Нет"] },
-        ingredients: { en: ["Seasonal fruits"], tr: ["Mevsim meyveleri"], ru: ["Сезонные фрукты"] },
-        macros_g: { protein: 2, carbs: 46, fat: 1 },
-        recipe_steps: { en: ["Chop fruits.","Mix gently.","Serve chilled."], tr: ["Meyveleri doğrayın.","Nazikçe karıştırın.","Soğuk servis edin."], ru: ["Нарежьте фрукты.","Аккуратно перемешайте.","Подавайте охлаждённым."] }
-      }
-    ]
+  const $ = (sel, root=document) => root.querySelector(sel);
+  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-
-  };
-
-// --- Auto-load latest menu.json (generated by GitHub Actions) ---
-function normalizeMenuJson(payload){
-  const src = (payload && payload.days) ? payload.days : payload;
-  const map = {
-    "Pazartesi":"Monday","PAZARTESİ":"Monday",
-    "Salı":"Tuesday","SALI":"Tuesday","Sali":"Tuesday",
-    "Çarşamba":"Wednesday","ÇARŞAMBA":"Wednesday","Carsamba":"Wednesday","Çarşamba":"Wednesday",
-    "Perşembe":"Thursday","PERŞEMBE":"Thursday","Persembe":"Thursday",
-    "Cuma":"Friday","CUMA":"Friday",
-    "Monday":"Monday","Tuesday":"Tuesday","Wednesday":"Wednesday","Thursday":"Thursday","Friday":"Friday"
-  };
-  const out = {};
-  const allowed = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
-  if (!src || typeof src !== "object") return out;
-  for (const [k,v] of Object.entries(src)) {
-    const kk = map[k] || k;
-    if (!allowed.includes(kk)) continue;
-    if (Array.isArray(v)) out[kk] = v;
-    else if (typeof v === "string") out[kk] = [v];
-    else out[kk] = [];
-  }
-  return out;
-}
-
-async function tryLoadMenuJson(){
-  try{
-    const r = await fetch("menu.json?ts=" + Date.now(), { cache: "no-store" });
-    if (!r.ok) return;
-    const j = await r.json();
-    const normalized = normalizeMenuJson(j);
-    if (normalized && Object.keys(normalized).length) {
-      MENU = normalized; // overwrite demo menu with real one
-      if (typeof renderMenu === "function") renderMenu();
-    }
-  } catch (e) {
-    // ignore (offline / local file)
-  }
-}
-document.addEventListener("DOMContentLoaded", tryLoadMenuJson);
-
-
-  // =============================
-  // i18n (UI)
-  // =============================
-  const I18N = {
-    en: {
-      logo_tagline:"Smart campus menu • nutrition • allergens • carbon footprint",
-      nav_home:"Home", nav_menu:"Menu", nav_recipes:"Recipes", nav_sustain:"Sustainability", nav_method:"How carbon footprint is calculated", nav_about:"About",
-      hero_title:"Smart campus menu with nutrition and carbon footprint.",
-      hero_lead:"GreenPlate automatically turns the university’s daily menu into clear dish cards: calories, ingredients, allergens, nutritional values, and carbon footprint. Built as a pilot—adaptable to any institution.",
-      cta_open_menu:"Open the menu", cta_open_dash:"Open sustainability dashboard",
-      home_visual_title:"A healthier, lower‑impact choice",
-      home_visual_p:"Nutritional transparency and carbon awareness can reduce confusion, improve trust, and encourage better campus food decisions.",
-      home_note:"Tip: Language selection is saved on the device, so students and lecturers don’t need to switch every time.",
-      kpi_dishes:"Dishes shown", kpi_kcal:"Total kcal (selected day)", kpi_co2:"Total carbon footprint (selected day)",
-      home_why_title:"Why GreenPlate?", home_why_sub:"A practical platform for the cafeteria that improves transparency, health choices, and sustainability.",
-      home_real_t:"From our cafeteria",
-      home_real_p:"Real campus meals (examples) — this is what GreenPlate turns into clear nutrition + allergen + carbon footprint cards.",
-      home_real_1:"Example meal tray (campus cafeteria).",
-      home_real_2:"Example meal tray (campus cafeteria).",
-      home_real_3:"Example meal tray (campus cafeteria).",
-      home_why_1_t:"For students", home_why_1_a:"Check allergens before eating.", home_why_1_b:"See calories and macros for better choices.", home_why_1_c:"Compare dishes by carbon footprint.",
-      home_why_2_t:"For lecturers & administration", home_why_2_a:"Supports sustainability education.", home_why_2_b:"Creates a single, official menu page for the week.", home_why_2_c:"Helps communicate dietary information clearly.",
-      home_why_3_t:"For the cafeteria", home_why_3_a:"Reduces repeated questions about ingredients and allergens.", home_why_3_b:"Encourages smarter portioning and less waste.", home_why_3_c:"Makes updates easy: weekly PDF → structured menu.",
-      menu_title:"Weekly cafeteria menu", menu_sub:"Choose a day to see dish cards. The weekly menu is auto-updated from the official PDF.",
-      label_portions:"Portions", filter_lowcarbon:"Low carbon", filter_glutenfree:"Gluten-free",
-      source_label:"Menu PDF URL", source_open:"Open PDF",
-      source_title:"Official weekly menu source", source_desc_1:"GreenPlate can always show the official PDF to users as the single source of truth.",
-      source_desc_2:"For a professional auto-update, a scheduled GitHub Action can download the PDF, convert it into menu.json, and redeploy the site.",
-      source_desc_3:"This approach works reliably on GitHub Pages and avoids browser CORS limitations because processing happens on the server side.",
-      auto_options:"Auto-update options", opt_a:"A) Link the official PDF (fastest)", opt_b:"B) Parse PDF in the browser (may be blocked by CORS)", opt_c:"C) GitHub Actions → menu.json (enabled — most reliable)",
-      day_pick:"Pick a day", menu_hint:"What you see on each card", menu_hint_1:"Dish name (EN/TR/RU)", menu_hint_2:"Calories + macros per selected portions",
-      menu_hint_3:"Allergens and ingredient list", menu_hint_4:"Carbon footprint (kg CO₂e)",
-      recipes_title:"Recipes and ingredients", recipes_sub:"Every dish has ingredients, allergens, nutrition and step-by-step instructions. In real use, dishes come from the weekly menu source.",
-      recipes_find:"Find dish",
-      sus_title:"Sustainability dashboard", sus_sub:"Track carbon footprint by dish and by day. This page also explains why food sustainability matters on campus.",
-      label_totalco2:"Total CO₂e",
-      sus_why_title:"Why sustainability in a university cafeteria?", sus_why_p:"Food systems have a measurable climate impact. When students can compare dishes, they can make informed choices, and the cafeteria can also reduce waste and improve sourcing over time.",
-      sus_actions_title:"What GreenPlate enables", sus_actions_1:"Transparent carbon footprint labels for each dish.", sus_actions_2:"Weekly summary for reporting and education.", sus_actions_3:"Comparison of “low carbon” options.",
-      sus_table_title:"Example carbon footprint table", sus_table_p:"In the pilot, GreenPlate stores per-ingredient emission factors and calculates dish totals based on the recipe. Below is an illustrative table (you can later replace with your chosen dataset).",
-      tbl_ing:"Ingredient", tbl_unit:"Unit", tbl_factor:"Emission factor", tbl_note:"Notes",
-      tbl_row_1_a:"Beef", tbl_row_1_b:"kg", tbl_row_1_c:"~ 25–60 kg CO₂e / kg", tbl_row_1_d:"Depends on production system",
-      tbl_row_2_a:"Chicken", tbl_row_2_b:"kg", tbl_row_2_c:"~ 5–10 kg CO₂e / kg", tbl_row_2_d:"Generally lower than beef",
-      tbl_row_3_a:"Legumes", tbl_row_3_b:"kg", tbl_row_3_c:"~ 0.5–2 kg CO₂e / kg", tbl_row_3_d:"Often among lowest",
-      tbl_row_4_a:"Vegetables", tbl_row_4_b:"kg", tbl_row_4_c:"~ 0.2–2 kg CO₂e / kg", tbl_row_4_d:"Seasonality and transport matter",
-      sus_chart_title:"carbon footprint per dish (selected day)",
-      sus_gallery_t:"Campus food & sustainability",
-      sus_gallery_p:"Visual context for the project: transparent menus, plant-forward options, and responsible sourcing.",
-      sus_g1:"Clear information helps students compare meals at a glance.",
-      sus_g2:"Plant-forward dishes usually have lower footprints and high nutritional value.",
-      sus_g3:"Recipes and ingredient lists support allergen safety and trust.",
-      meth_title:"How carbon footprint is calculated", meth_sub:"GreenPlate uses a transparent recipe-based approach: ingredient amounts × emission factors, adjusted for portion size.",
-      meth_part_1_t:"1) Recipe → ingredient list", meth_part_1_p:"Each dish includes an ingredient list and (optionally) quantities. If the cafeteria only provides dish names, GreenPlate can use a standardized recipe template for the pilot and improve it over time with the kitchen team.",
-      meth_part_2_t:"2) Ingredient amount × emission factor", meth_part_2_p:"For each ingredient, we multiply the ingredient amount (in kg) by its emission factor (kg CO₂e per kg). The sum across all ingredients is the dish footprint. This can be extended to include cooking energy and packaging.",
-      meth_formula_t:"Simple formula", meth_formula_p:"Dish CO₂e = Σ (ingredient_kg × factor_kgCO₂e_per_kg) × portions",
-      meth_part_3_t:"3) Uncertainty and transparency", meth_part_3_p:"Emission factors vary by country, farming method, and transport. GreenPlate should show the data source and clearly label values as “estimated”. For the pilot, a consistent dataset is chosen to keep comparisons fair.",
-      meth_part_4_t:"4) What’s next for a stronger model", meth_next_1:"Add kitchen-specific quantities for each recipe.", meth_next_2:"Include food waste (leftovers) and portion optimization.",
-      meth_next_3:"Add seasonal/locally sourced multipliers.", meth_next_4:"Publish a weekly campus sustainability summary.",
-      meth_example_t:"Worked example (illustrative)",
-      meth_example_p:"Suppose a dish uses 0.12 kg chicken, 0.18 kg rice, and 0.08 kg vegetables per portion. Using emission factors, we estimate:",
-      ex_col_1:"Ingredient", ex_col_2:"Amount (kg)", ex_col_3:"Factor (kg CO₂e/kg)", ex_col_4:"Subtotal (kg CO₂e)",
-      ex_r1_1:"Chicken", ex_r2_1:"Rice", ex_r3_1:"Vegetables", ex_total:"Total",
-      meth_example_note:"Values are estimates for demonstration. A pilot should use one consistent dataset and cite the source.",
-      about_title:"About this project", about_sub:"GreenPlate is a smart meal-information platform for campus dining: menu, recipes, allergens, nutrition and carbon footprint.",
-      about_uni_t:"University information", about_uni_name:"Institution:", about_uni_addr:"Address:", about_uni_site:"Menu source (PDF):", about_uni_note:"You can replace the logo URL and address with official details (and add a map link) when you have them.",
-      about_settings_t:"Quick settings", set_logo:"University logo URL", set_name:"University name", set_addr:"Address / campus", set_save:"Save",
-      about_media_t:"Project visuals",
-      about_media_p:"A clean, campus-ready interface for menu transparency, allergy safety, and sustainability learning.",
-      about_m1:"A single official weekly menu page reduces confusion.",
-      about_m2:"Nutrition and allergen information supports safer choices.",
-      about_m3:"Carbon metrics can be used for education and reporting.",
-      about_scope_t:"Scope and future work", about_scope_p1:"For a pilot, GreenPlate can start with weekly menu parsing and a small recipe database. Over time, the platform can be expanded with more dishes, verified kitchen recipes, and a stronger emissions dataset.",
-      about_scope_p2:"Technically, GitHub Pages hosts static files. To automatically update when the university publishes a new weekly PDF, we can add a GitHub Action that downloads the PDF, converts it into JSON, and redeploys the site.",
-      footer_note:"GreenPlate • Single-file website with multi-page navigation • Weekly menu auto-updated via GitHub Actions.",
-      modal_ing:"Ingredients", modal_all:"Allergens", modal_nut:"Nutrition per portion", modal_steps:"Steps", modal_close:"Close",
-      btn_recipe:"Recipe", btn_ing:"Ingredients", btn_all:"Allergens",
-      tag_kcal:"kcal", tag_co2:"kg CO₂e",
-      meth_app_t:"Ingredient-level calculation (summary table)",
-      meth_app_p:"Below is the transparent ingredient-level logic used in GreenPlate. The same steps are applied consistently across dishes for fair comparison.",
-      meth_tbl1_h1:"Field",
-      meth_tbl1_h2:"Meaning",
-      meth_f_ingredient:"Name of the product (e.g., beef, olive oil, rice)",
-      meth_f_quantity:"Planned amount used (g, ml, pcs, etc.)",
-      meth_f_unittype:"Unit of measurement (g, kg, L, pcs)",
-      meth_f_parsed:"Quantity converted to kilograms",
-      meth_f_category:"Food category (meat, vegetable, oil, dairy, grain, etc.)",
-      meth_f_usedpct:"Share of the package actually used in the recipe",
-      meth_f_usedkg:"Actual amount used after adjustment",
-      meth_f_ef:"Emission factor (kg CO₂e per 1 kg of product)",
-      meth_f_co2e:"Carbon footprint for this ingredient",
-      meth_tbl2_title:"Core formulas",
-      meth_tbl2_h1:"Step",
-      meth_tbl2_h2:"Formula",
-      meth_s_convert:"Convert to kg",
-      meth_or:"or",
-      meth_s_adjust:"Adjust usage",
-      meth_s_ing:"Ingredient footprint",
-      meth_s_dish:"Dish footprint",
-      meth_density_note:"Note: for olive oil, density ≈ 0.91 kg/L (used to convert ml to kg).",
-      meth_ex_title:"Example: Olive oil",
-      meth_tbl3_h1:"Parameter",
-      meth_tbl3_h2:"Value",
-      meth_ex_qty:"Quantity",
-      meth_ex_parsed:"ParsedKg",
-      meth_ex_usedpct:"UsedPct",
-      meth_ex_usedkg:"UsedKg",
-      meth_ex_note:"This prevents overestimating emissions when only a small part of a packaged ingredient is used.",
-
-    },
-    tr: {
-      logo_tagline:"Akıllı kampüs menüsü • besin • alerjen • ayak izi",
-      nav_home:"Ana sayfa", nav_menu:"Menü", nav_recipes:"Tarifler", nav_sustain:"Sürdürülebilirlik", nav_method:"Karbon ayak izi nasıl hesaplanır", nav_about:"Hakkında",
-      hero_title:"Akıllı kampüs menüsü: besin ve karbon ayak izi bilgisiyle.",
-      hero_lead:"GreenPlate, üniversitenin günlük menüsünü otomatik olarak anlaşılır kartlara dönüştürür: kalori, içerik, alerjen, besin değerleri ve karbon ayak izi. Pilot olarak tasarlandı—her kuruma uyarlanabilir.",
-      cta_open_menu:"Menüyü aç", cta_open_dash:"Sürdürülebilirlik panosu",
-      home_visual_title:"Daha sağlıklı, daha düşük etkili seçim",
-      home_visual_p:"Besin şeffaflığı ve karbon farkındalığı, kafa karışıklığını azaltır, güveni artırır ve kampüste daha iyi yemek seçimlerini destekler.",
-      home_note:"İpucu: Dil seçimi cihazda kaydedilir; öğrenciler ve hocalar her seferinde değiştirmek zorunda kalmaz.",
-      kpi_dishes:"Gösterilen yemek", kpi_kcal:"Toplam kalori (seçilen gün)", kpi_co2:"Toplam CO₂e (seçilen gün)",
-      home_why_title:"Neden GreenPlate?", home_why_sub:"Yemekhane için şeffaflık, sağlıklı seçim ve sürdürülebilirliği destekleyen pratik bir platform.",
-      home_why_1_t:"Öğrenciler için", home_why_1_a:"Yemeden önce alerjenleri kontrol edin.", home_why_1_b:"Daha iyi seçim için kalori ve makroları görün.", home_why_1_c:"Karbon ayak izine göre karşılaştırın.",
-      home_why_2_t:"Akademisyenler & yönetim için", home_why_2_a:"Sürdürülebilirlik eğitimini destekler.", home_why_2_b:"Hafta için tek resmi menü sayfası oluşturur.", home_why_2_c:"Diyet bilgisini net iletmeye yardımcı olur.",
-      home_why_3_t:"Yemekhane için", home_why_3_a:"İçerik ve alerjen sorularını azaltır.", home_why_3_b:"Daha iyi porsiyonlama ve daha az israf sağlar.", home_why_3_c:"Güncellemeyi kolaylaştırır: haftalık PDF → yapılandırılmış menü.",
-      menu_title:"Haftalık yemekhane menüsü", menu_sub:"Bir gün seçin ve kartları görün. Haftalık menü resmi PDF’den otomatik olarak güncellenir.",
-      label_portions:"Porsiyon", filter_lowcarbon:"Düşük karbon", filter_glutenfree:"Glütensiz",
-      source_label:"Menü PDF bağlantısı", source_open:"PDF'yi aç",
-      source_title:"Resmi haftalık menü kaynağı", source_desc_1:"GreenPlate, tek doğru kaynak olarak resmi PDF’yi her zaman kullanıcıya gösterebilir.",
-      source_desc_2:"Profesyonel oto-güncelleme için zamanlanmış GitHub Action PDF’yi indirir, menu.json’a çevirir ve siteyi yeniden yayınlar.",
-      source_desc_3:"Bu yaklaşım GitHub Pages’te güvenilir çalışır; işlem sunucu tarafında olduğu için tarayıcı CORS kısıtlarını etkilemez.",
-      auto_options:"Otomatik güncelleme", opt_a:"A) Resmi PDF'ye link (en hızlı)", opt_b:"B) PDF'yi tarayıcıda ayrıştır (CORS olabilir)", opt_c:"C) GitHub Actions → menu.json (aktif — en güvenilir)",
-      day_pick:"Gün seç", menu_hint:"Kartlarda ne var?", menu_hint_1:"Yemek adı (EN/TR/RU)", menu_hint_2:"Seçilen porsiyona göre kalori + makro",
-      menu_hint_3:"Alerjenler ve içerik listesi", menu_hint_4:"Karbon ayak izi (kg CO₂e)",
-      recipes_title:"Tarifler ve içerikler", recipes_sub:"Her yemekte içerik, alerjen, besin ve adım adım tarif vardır. Gerçekte yemekler haftalık menüden gelir.",
-      recipes_find:"Yemek ara",
-      sus_title:"Sürdürülebilirlik panosu", sus_sub:"Yemek ve gün bazında karbon ayak izini takip edin. Bu sayfa ayrıca yemekte sürdürülebilirliğin neden önemli olduğunu açıklar.",
-      label_totalco2:"Toplam CO₂e",
-      sus_why_title:"Üniversite yemekhanesinde sürdürülebilirlik neden önemli?", sus_why_p:"Gıda sistemlerinin ölçülebilir bir iklim etkisi vardır. Öğrenciler yemekleri karşılaştırınca bilinçli seçim yapabilir; yemekhane de israfı azaltıp tedariki iyileştirebilir.",
-      sus_actions_title:"GreenPlate ne sağlar?", sus_actions_1:"Her yemek için şeffaf karbon ayak izi etiketleri.", sus_actions_2:"Raporlama ve eğitim için haftalık özet.", sus_actions_3:"“Düşük karbon” seçeneklerini karşılaştırma.",
-      sus_table_title:"Örnek karbon ayak izi tablosu", sus_table_p:"Pilot aşamasında GreenPlate, malzeme başına emisyon faktörlerini tutar ve tarif üzerinden toplamı hesaplar. Aşağıdaki tablo örnektir (sonra veri setinizi koyabilirsiniz).",
-      tbl_ing:"Malzeme", tbl_unit:"Birim", tbl_factor:"Emisyon faktörü", tbl_note:"Not",
-      tbl_row_1_a:"Sığır eti", tbl_row_1_b:"kg", tbl_row_1_c:"~ 25–60 kg CO₂e / kg", tbl_row_1_d:"Üretime göre değişir",
-      tbl_row_2_a:"Tavuk", tbl_row_2_b:"kg", tbl_row_2_c:"~ 5–10 kg CO₂e / kg", tbl_row_2_d:"Genelde sığırdan düşük",
-      tbl_row_3_a:"Baklagiller", tbl_row_3_b:"kg", tbl_row_3_c:"~ 0.5–2 kg CO₂e / kg", tbl_row_3_d:"En düşükler arasında",
-      tbl_row_4_a:"Sebzeler", tbl_row_4_b:"kg", tbl_row_4_c:"~ 0.2–2 kg CO₂e / kg", tbl_row_4_d:"Mevsim ve taşıma etkiler",
-      sus_chart_title:"Yemek başına karbon ayak izi (seçilen gün)",
-      sus_gallery_t:"Kampüste yemek & sürdürülebilirlik",
-      sus_gallery_p:"Proje için görsel bağlam: şeffaf menüler, bitki ağırlıklı seçenekler ve sorumlu tedarik.",
-      sus_g1:"Net bilgi, öğrencilerin yemekleri hızlıca karşılaştırmasına yardımcı olur.",
-      sus_g2:"Bitki ağırlıklı yemekler genelde daha düşük ayak izi ve yüksek besin değerine sahiptir.",
-      sus_g3:"Tarif ve içerik listeleri alerjen güvenliği ve güven sağlar.",
-      meth_title:"Karbon ayak izi nasıl hesaplanır", meth_sub:"GreenPlate şeffaf bir tarif-temelli yaklaşım kullanır: miktar × emisyon faktörü, porsiyonla ölçeklenir.",
-      meth_part_1_t:"1) Tarif → malzeme listesi", meth_part_1_p:"Her yemekte malzeme listesi (ve isteğe bağlı miktar) vardır. Yemekhane sadece isim veriyorsa, pilot için standart tarif şablonları kullanılabilir ve zamanla geliştirilir.",
-      meth_part_2_t:"2) Miktar × emisyon faktörü", meth_part_2_p:"Her malzeme için (kg) miktar, (kg CO₂e/kg) faktörle çarpılır. Toplam, yemeğin ayak izidir. Pişirme enerjisi ve ambalaj da eklenebilir.",
-      meth_formula_t:"Basit formül", meth_formula_p:"Yemek CO₂e = Σ (malzeme_kg × faktör_kgCO₂e/kg) × porsiyon",
-      meth_part_3_t:"3) Belirsizlik ve şeffaflık", meth_part_3_p:"Faktörler ülkeye, üretime ve taşımaya göre değişir. GreenPlate veri kaynağını göstermeli ve değeri “tahmini” olarak işaretlemelidir.",
-      meth_part_4_t:"4) Daha güçlü model için sonraki adımlar", meth_next_1:"Her tarif için mutfağa özel miktarlar.", meth_next_2:"Atık (artık) ve porsiyon optimizasyonu.",
-      meth_next_3:"Mevsim/yerel çarpanlar.", meth_next_4:"Haftalık kampüs sürdürülebilirlik özeti.",
-      meth_example_t:"Örnek hesap (gösterim)",
-      meth_example_p:"Bir porsiyonda 0.12 kg tavuk, 0.18 kg pirinç ve 0.08 kg sebze olduğunu varsayalım. Emisyon faktörleriyle yaklaşık hesap:",
-      ex_col_1:"Malzeme", ex_col_2:"Miktar (kg)", ex_col_3:"Faktör (kg CO₂e/kg)", ex_col_4:"Ara toplam (kg CO₂e)",
-      ex_r1_1:"Tavuk", ex_r2_1:"Pirinç", ex_r3_1:"Sebzeler", ex_total:"Toplam",
-      meth_example_note:"Değerler örnek amaçlıdır. Pilot için tek bir tutarlı veri seti seçilip kaynak belirtilmelidir.",
-      about_title:"Proje hakkında", about_sub:"GreenPlate, kampüs yemekleri için akıllı bilgi platformudur: menü, tarif, alerjen, besin ve karbon ayak izi.",
-      about_uni_t:"Üniversite bilgisi", about_uni_name:"Kurum:", about_uni_addr:"Adres:", about_uni_site:"Menü kaynağı (PDF):", about_uni_note:"Logo URL ve adresi resmi bilgilerle güncelleyebilirsiniz (harita linki eklenebilir).",
-      about_settings_t:"Hızlı ayarlar", set_logo:"Üniversite logo URL", set_name:"Üniversite adı", set_addr:"Adres / kampüs", set_save:"Kaydet",
-      about_media_t:"Proje görselleri",
-      about_media_p:"Menü şeffaflığı, alerjen güvenliği ve sürdürülebilirlik öğrenimi için kampüs uyumlu arayüz.",
-      about_m1:"Tek resmi haftalık menü sayfası kafa karışıklığını azaltır.",
-      about_m2:"Besin ve alerjen bilgisi daha güvenli seçimleri destekler.",
-      about_m3:"Karbon metrikleri eğitim ve raporlama için kullanılabilir.",
-      about_scope_t:"Kapsam ve gelecek çalışmalar", about_scope_p1:"Pilot için, haftalık menü ayrıştırma ve küçük bir tarif veritabanı yeterlidir. Zamanla doğrulanmış tarifler ve daha güçlü emisyon veri setiyle genişletilebilir.",
-      about_scope_p2:"GitHub Pages statiktir. Üniversite yeni haftalık PDF yayınlayınca otomatik güncelleme için PDF’yi JSON’a çeviren ve siteyi yeniden yayınlayan GitHub Action ekleyebiliriz.",
-      footer_note:"GreenPlate • Çok sayfalı gezinmeli tek HTML site • Haftalık menü GitHub Actions ile otomatik güncellenir.",
-      modal_ing:"İçindekiler", modal_all:"Alerjenler", modal_nut:"Porsiyon başına besin", modal_steps:"Adımlar", modal_close:"Kapat",
-      btn_recipe:"Tarif", btn_ing:"İçindekiler", btn_all:"Alerjen",
-      tag_kcal:"kcal", tag_co2:"kg CO₂e",
-      meth_app_t:"Bileşen bazlı hesaplama (özet tablo)",
-      meth_app_p:"Aşağıda GreenPlate'in kullandığı şeffaf bileşen-bazlı mantık yer alır. Adımlar karşılaştırma için tüm yemeklerde tutarlı uygulanır.",
-      meth_tbl1_h1:"Alan",
-      meth_tbl1_h2:"Açıklama",
-      meth_f_ingredient:"Ürün adı (örn. dana eti, zeytinyağı, pirinç)",
-      meth_f_quantity:"Tarifte kullanılan miktar (g, ml, adet vb.)",
-      meth_f_unittype:"Birim (g, kg, L, adet)",
-      meth_f_parsed:"Kilograma çevrilmiş miktar",
-      meth_f_category:"Kategori (et, sebze, yağ, süt ürünleri, tahıl vb.)",
-      meth_f_usedpct:"Paketin tarifte kullanılan yüzdesi",
-      meth_f_usedkg:"Düzeltilmiş gerçek kullanılan miktar",
-      meth_f_ef:"Emisyon faktörü (kg ürün başına kg CO₂e)",
-      meth_f_co2e:"Bu bileşenin karbon ayak izi",
-      meth_tbl2_title:"Temel formüller",
-      meth_tbl2_h1:"Adım",
-      meth_tbl2_h2:"Formül",
-      meth_s_convert:"Kg'a çevir",
-      meth_or:"veya",
-      meth_s_adjust:"Kullanımı düzelt",
-      meth_s_ing:"Bileşen ayak izi",
-      meth_s_dish:"Yemek ayak izi",
-      meth_density_note:"Not: zeytinyağı yoğunluğu ≈ 0.91 kg/L (ml → kg dönüşümü için).",
-      meth_ex_title:"Örnek: Zeytinyağı",
-      meth_tbl3_h1:"Parametre",
-      meth_tbl3_h2:"Değer",
-      meth_ex_qty:"Miktar",
-      meth_ex_parsed:"ParsedKg",
-      meth_ex_usedpct:"UsedPct",
-      meth_ex_usedkg:"UsedKg",
-      meth_ex_note:"Paketli ürünün küçük bir kısmı kullanıldığında emisyonların abartılmasını önler.",
-
-    },
-    ru: {
-      logo_tagline:"Умное кампус‑меню • питание • аллергены • след",
-      nav_home:"Главная", nav_menu:"Меню", nav_recipes:"Рецепты", nav_sustain:"Экология", nav_method:"Как считается углеродный след", nav_about:"О проекте",
-      hero_title:"Умное меню кампуса: питание и carbon footprint.",
-      hero_lead:"GreenPlate автоматически превращает ежедневное меню университета в понятные карточки блюд: калории, ингредиенты, аллергены, пищевая ценность и углеродный след. Сделано как пилот — можно адаптировать под любой вуз.",
-      cta_open_menu:"Открыть меню", cta_open_dash:"Панель устойчивости",
-      home_visual_title:"Более здоровый выбор с меньшим воздействием",
-      home_visual_p:"Прозрачность по питанию и углеродному следу снижает путаницу, повышает доверие и помогает принимать лучшие решения о еде на кампусе.",
-      home_note:"Подсказка: язык сохраняется на устройстве — студентам и преподавателям не нужно переключать каждый раз.",
-      kpi_dishes:"Показано блюд", kpi_kcal:"Итого ккал (выбранный день)", kpi_co2:"Итого CO₂e (выбранный день)",
-      home_why_title:"Зачем GreenPlate?", home_why_sub:"Практичная платформа для столовой: прозрачность, более здоровый выбор и устойчивость.",
-      home_why_1_t:"Для студентов", home_why_1_a:"Проверка аллергенов до еды.", home_why_1_b:"Калории и макро‑показатели для выбора.", home_why_1_c:"Сравнение блюд по углеродному следу.",
-      home_why_2_t:"Для преподавателей и администрации", home_why_2_a:"Поддержка обучения устойчивому развитию.", home_why_2_b:"Единая официальная страница меню на неделю.", home_why_2_c:"Чёткая коммуникация диетической информации.",
-      home_why_3_t:"Для столовой", home_why_3_a:"Меньше повторяющихся вопросов про состав и аллергены.", home_why_3_b:"Лучше порционирование и меньше отходов.", home_why_3_c:"Лёгкие обновления: недельный PDF → структурированное меню.",
-      menu_title:"Недельное меню столовой", menu_sub:"Выберите день и смотрите карточки. Недельное меню обновляется автоматически из официального PDF.",
-      label_portions:"Порции", filter_lowcarbon:"Низкий carbon footprint", filter_glutenfree:"Без глютена",
-      source_label:"Ссылка на PDF‑меню", source_open:"Открыть PDF",
-      source_title:"Официальный источник недельного меню", source_desc_1:"GreenPlate может всегда показывать официальный PDF как главный источник.",
-      source_desc_2:"Авто‑обновление уже включено через GitHub Actions: скачать официальный PDF → обновить menu.json → обновить сайт (по расписанию или вручную).",
-      source_desc_3:"Этот подход надёжно работает на GitHub Pages: обработка идёт на стороне GitHub Actions, поэтому нет проблем CORS в браузере.",
-      auto_options:"Авто‑обновление", opt_a:"A) Ссылка на официальный PDF (самое быстрое)", opt_b:"B) Парсить PDF в браузере (может блокироваться CORS)", opt_c:"C) GitHub Actions → menu.json (включено — самый надёжный)",
-      day_pick:"Выберите день", menu_hint:"Что есть на карточке", menu_hint_1:"Название блюда (EN/TR/RU)", menu_hint_2:"Калории + БЖУ на выбранные порции",
-      menu_hint_3:"Аллергены и список ингредиентов", menu_hint_4:"Углеродный след (кг CO₂e)",
-      recipes_title:"Рецепты и ингредиенты", recipes_sub:"У каждого блюда есть ингредиенты, аллергены, питание и пошаговый рецепт. В реальном использовании блюда приходят из недельного меню.",
-      recipes_find:"Найти блюдо",
-      sus_title:"Экологическая панель", sus_sub:"Следите за углеродным следом по блюдам и дням. Тут же — объяснение важности устойчивости на кампусе.",
-      label_totalco2:"Итого CO₂e",
-      sus_why_title:"Почему устойчивость важна в университетской столовой?", sus_why_p:"У продовольственных систем есть измеримое климатическое влияние. Когда студенты могут сравнивать блюда, они делают осознанный выбор, а столовая может снижать отходы и улучшать закупки.",
-      sus_actions_title:"Что даёт GreenPlate", sus_actions_1:"Прозрачные carbon footprint‑метки для каждого блюда.", sus_actions_2:"Недельная сводка для отчётности и обучения.", sus_actions_3:"Сравнение “низкоуглеродных” вариантов.",
-      sus_table_title:"Пример таблицы углеродного следа", sus_table_p:"В пилоте GreenPlate хранит эмиссионные факторы по ингредиентам и считает итог по рецепту. Таблица ниже — иллюстрация (потом заменим на выбранный датасет).",
-      tbl_ing:"Ингредиент", tbl_unit:"Ед.", tbl_factor:"Эмиссионный фактор", tbl_note:"Примечание",
-      tbl_row_1_a:"Говядина", tbl_row_1_b:"кг", tbl_row_1_c:"~ 25–60 кг CO₂e / кг", tbl_row_1_d:"Зависит от производства",
-      tbl_row_2_a:"Курица", tbl_row_2_b:"кг", tbl_row_2_c:"~ 5–10 кг CO₂e / кг", tbl_row_2_d:"Обычно ниже говядины",
-      tbl_row_3_a:"Бобовые", tbl_row_3_b:"кг", tbl_row_3_c:"~ 0.5–2 кг CO₂e / кг", tbl_row_3_d:"Часто самые низкие",
-      tbl_row_4_a:"Овощи", tbl_row_4_b:"кг", tbl_row_4_c:"~ 0.2–2 кг CO₂e / кг", tbl_row_4_d:"Важны сезонность и транспорт",
-      sus_chart_title:"carbon footprint на блюдо (выбранный день)",
-      sus_gallery_t:"Еда на кампусе и устойчивость",
-      sus_gallery_p:"Визуальный контекст проекта: прозрачные меню, больше растительных блюд и ответственное снабжение.",
-      sus_g1:"Понятная информация помогает сравнивать блюда с первого взгляда.",
-      sus_g2:"Растительные блюда обычно имеют меньший след и хорошую питательность.",
-      sus_g3:"Рецепты и состав повышают безопасность по аллергенам и доверие.",
-      meth_title:"Как считается углеродный след", meth_sub:"GreenPlate использует прозрачный подход по рецепту: количества × эмиссионные факторы, с учётом порций.",
-      meth_part_1_t:"1) Рецепт → список ингредиентов", meth_part_1_p:"У каждого блюда есть список ингредиентов (и опционально количества). Если столовая публикует только названия, для пилота можно использовать стандартизированные рецепты и уточнять их с кухней.",
-      meth_part_2_t:"2) Количество × фактор", meth_part_2_p:"Для каждого ингредиента умножаем массу (кг) на фактор (кг CO₂e/кг). Сумма по всем ингредиентам — след блюда. Модель можно расширить энергией готовки и упаковкой.",
-      meth_formula_t:"Простая формула", meth_formula_p:"CO₂e блюда = Σ (ингредиент_кг × фактор_кгCO₂e/кг) × порции",
-      meth_part_3_t:"3) Неопределённость и прозрачность", meth_part_3_p:"Факторы зависят от страны, метода производства и логистики. Важно показывать источник данных и помечать значения как “оценочные”.",
-      meth_part_4_t:"4) Что дальше для более сильной модели", meth_next_1:"Количества из кухни для каждого рецепта.", meth_next_2:"Учёт пищевых отходов и оптимизация порций.",
-      meth_next_3:"Коэффициенты сезонности/локальности.", meth_next_4:"Недельная сводка по устойчивости кампуса.",
-      meth_example_t:"Пример расчёта (иллюстрация)",
-      meth_example_p:"Предположим, в порции 0.12 кг курицы, 0.18 кг риса и 0.08 кг овощей. С эмиссионными факторами получаем:",
-      ex_col_1:"Ингредиент", ex_col_2:"Количество (кг)", ex_col_3:"Фактор (кг CO₂e/кг)", ex_col_4:"Подытог (кг CO₂e)",
-      ex_r1_1:"Курица", ex_r2_1:"Рис", ex_r3_1:"Овощи", ex_total:"Итого",
-      meth_example_note:"Значения оценочные и приведены для демонстрации. В пилоте лучше выбрать один датасет и указывать источник.",
-      about_title:"О проекте", about_sub:"GreenPlate — умная платформа информации о питании на кампусе: меню, рецепты, аллергены, пищевая ценность и углеродный след.",
-      about_uni_t:"Информация об университете", about_uni_name:"Учреждение:", about_uni_addr:"Адрес:", about_uni_site:"Источник меню (PDF):", about_uni_note:"Можно заменить URL логотипа и адрес на официальные данные (и добавить ссылку на карту).",
-      about_settings_t:"Быстрые настройки", set_logo:"URL логотипа", set_name:"Название университета", set_addr:"Адрес / кампус", set_save:"Сохранить",
-      about_media_t:"Визуальные материалы проекта",
-      about_media_p:"Интерфейс, готовый для кампуса: прозрачное меню, безопасность по аллергенам и обучение устойчивости.",
-      about_m1:"Единая официальная страница меню на неделю снижает путаницу.",
-      about_m2:"Питание и аллергены помогают выбирать безопаснее.",
-      about_m3:"Углеродные метрики можно использовать в обучении и отчётности.",
-      about_scope_t:"Объём и развитие", about_scope_p1:"Для пилота достаточно парсинга недельного меню и небольшой базы рецептов. Со временем можно расширить: проверенные рецепты кухни и более сильный датасет эмиссий.",
-      about_scope_p2:"GitHub Pages — статичный хостинг. Для авто‑обновления при новом PDF можно добавить GitHub Action: скачать PDF → конвертировать в JSON → перезапуск сайта.",
-      footer_note:"GreenPlate • Один HTML‑сайт с навигацией по разделам • Недельное меню обновляется автоматически через GitHub Actions.",
-      modal_ing:"Ингредиенты", modal_all:"Аллергены", modal_nut:"Пищевая ценность", modal_steps:"Шаги", modal_close:"Закрыть",
-      btn_recipe:"Рецепт", btn_ing:"Ингредиенты", btn_all:"Аллергены",
-      tag_kcal:"ккал", tag_co2:"кг CO₂e",
-      meth_app_t:"Расчёт по ингредиентам (сводная таблица)",
-      meth_app_p:"Ниже — прозрачная логика расчёта по ингредиентам в GreenPlate. Одни и те же шаги применяются ко всем блюдам для честного сравнения.",
-      meth_tbl1_h1:"Поле",
-      meth_tbl1_h2:"Значение",
-      meth_f_ingredient:"Название продукта (например, говядина, оливковое масло, рис)",
-      meth_f_quantity:"Количество в рецепте (г, мл, шт. и т.д.)",
-      meth_f_unittype:"Единица измерения (г, кг, л, шт.)",
-      meth_f_parsed:"Количество, переведённое в килограммы",
-      meth_f_category:"Категория (мясо, овощи, масло, молочные, злаки и т.д.)",
-      meth_f_usedpct:"Какая доля упаковки реально используется",
-      meth_f_usedkg:"Фактически использованное количество",
-      meth_f_ef:"Коэффициент выбросов (кг CO₂e на 1 кг продукта)",
-      meth_f_co2e:"Углеродный след этого ингредиента",
-      meth_tbl2_title:"Основные формулы",
-      meth_tbl2_h1:"Шаг",
-      meth_tbl2_h2:"Формула",
-      meth_s_convert:"Перевод в кг",
-      meth_or:"или",
-      meth_s_adjust:"Учёт доли использования",
-      meth_s_ing:"След ингредиента",
-      meth_s_dish:"След блюда",
-      meth_density_note:"Примечание: плотность оливкового масла ≈ 0.91 кг/л (для перевода мл → кг).",
-      meth_ex_title:"Пример: оливковое масло",
-      meth_tbl3_h1:"Параметр",
-      meth_tbl3_h2:"Значение",
-      meth_ex_qty:"Количество",
-      meth_ex_parsed:"ParsedKg",
-      meth_ex_usedpct:"UsedPct",
-      meth_ex_usedkg:"UsedKg",
-      meth_ex_note:"Это предотвращает завышение выбросов, когда используется лишь малая часть продукта из упаковки.",
-
-    }
-  };
-
-  let LANG = localStorage.getItem("gp_lang") || "en";
-
-  const fmt = {
-    kcal: (n)=> `${Math.round(n)} ${I18N[LANG].tag_kcal}`,
-    kg: (n)=> `${(Math.round(n*100)/100).toFixed(2)} ${I18N[LANG].tag_co2}`
-  };
-
-  function t(key){ return (I18N[LANG] && I18N[LANG][key]) ? I18N[LANG][key] : (I18N.en[key] || key); }
-  function pick(obj){ return (obj && obj[LANG]) ? obj[LANG] : (obj && obj.en) ? obj.en : obj; }
-
-  // =============================
-  // State
-  // =============================
-  const state = {
-    day: Object.keys(MENU)[0],
-    portions: Number(localStorage.getItem("gp_portions") || "1") || 1,
-    lowCarbonOnly: false,
-    glutenFreeOnly: false,
-    recipeQuery: ""
-  };
-
-  // =============================
-  // Core calculations
-  // =============================
-  function scaled(dish){
-    const p = Math.max(1, Number(state.portions) || 1);
-    return {
-      ...dish,
-      calories_kcal: dish.calories_kcal * p,
-      co2_kg: dish.co2_kg * p,
-      macros_g: {
-        protein: dish.macros_g.protein * p,
-        carbs: dish.macros_g.carbs * p,
-        fat: dish.macros_g.fat * p
-      }
-    };
-  }
-
-  function isGlutenFree(dish){
-    // if any language contains "gluten" word, treat as not GF
-    const all = [...(dish.allergens.en||[]), ...(dish.allergens.tr||[]), ...(dish.allergens.ru||[])].join(" ").toLowerCase();
-    return !all.includes("gluten") && !all.includes("глют") && !all.includes("glüten");
-  }
-
-  function isLowCarbon(dish){
-    return dish.co2_kg <= 1.0; // demo threshold
-  }
-
-  // =============================
-  // Router (multi-page feel, one file)
-  // =============================
-  const routes = {
-    "/what": "page-what",
-
-    "/home": "page-home",
-    "/menu": "page-menu",
-    "/recipes": "page-recipes",
-    "/sustainability": "page-sustainability",
-    "/method": "page-method",
-    "/about": "page-about"
-  };
-
-  function currentRoute(){
-    const h = (location.hash || "#/home").replace("#", "");
-    return routes[h] ? h : "/home";
-  }
-
-  function showPage(route){
-    Object.values(routes).forEach(id=>{
-      document.getElementById(id).classList.remove("active");
+  function setActivePage(pageKey){
+    const id = `page-${pageKey}`;
+    PAGE_IDS.forEach(pid => {
+      const el = document.getElementById(pid);
+      if (!el) return;
+      el.classList.toggle('active', pid === id);
     });
-    document.getElementById(routes[route]).classList.add("active");
-
-    // nav active
-    document.querySelectorAll(".pill[data-route]").forEach(a=>{
-      a.classList.toggle("active", a.getAttribute("data-route") === route);
+    // highlight nav pills
+    $$('a[href^="#/"]').forEach(a=>{
+      const href=a.getAttribute('href')||'';
+      const key=href.replace('#/','').trim();
+      a.classList.toggle('active', key===pageKey);
+      a.setAttribute('aria-current', key===pageKey ? 'page' : 'false');
     });
-
-    // render route-dependent content
-    if(route === "/menu"){ renderDayChips(); renderMenu(); }
-    if(route === "/recipes"){ renderRecipes(); }
-    if(route === "/sustainability"){ renderChart(); renderTotals(); }
-    window.scrollTo({ top: 0, behavior: "instant" });
+    // smooth scroll to top of page container
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({behavior:"smooth", block:"start"});
   }
 
-  window.addEventListener("hashchange", ()=>showPage(currentRoute()));
-
-  // =============================
-  // Rendering helpers
-  // =============================
-  const el = (id)=>document.getElementById(id);
-
-  function applyI18n(){
-    document.querySelectorAll("[data-i18n]").forEach(node=>{
-      node.textContent = t(node.getAttribute("data-i18n"));
-    });
-    document.querySelectorAll(".langBtn").forEach(b=>{
-      b.classList.toggle("active", b.getAttribute("data-lang")===LANG);
-    });
-    // update placeholders
-    const rs = el("recipeSearch");
-    if(rs) rs.placeholder = (LANG==="tr" ? "Ara…" : LANG==="ru" ? "Поиск…" : "Search…");
-
-    renderKpis();
-    const route = currentRoute();
-    showPage(route);
+  function routeFromHash(){
+    const h = (location.hash || '#/home').replace('#/','').trim().toLowerCase();
+    const key = PAGES.includes(h) ? h : 'home';
+    setActivePage(key);
   }
 
-  function setLang(lang){
-    LANG = lang;
-    localStorage.setItem("gp_lang", LANG);
-    applyI18n();
-  }
+  // ===== MENU =====
+  const MENU_ONLY_DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
+  let menuData = null;
+  let selectedDay = "Monday";
+
+  const fallbackDishInfo = (name) => {
+    const n = (name||'').toLowerCase();
+    // rough kcal & CO2 heuristics (so counters are not empty)
+    let kcal = 450, co2 = 0.9;
+    if (/(çorba|corba|soup)/.test(n)) { kcal = 180; co2 = 0.2; }
+    else if (/(tavuk|chicken|kanat)/.test(n)) { kcal = 520; co2 = 1.6; }
+    else if (/(etli|kofte|köfte|beyran|meat|beef|lamb)/.test(n)) { kcal = 650; co2 = 2.8; }
+    else if (/(pilav|rice|bulgur|makarna|pasta)/.test(n)) { kcal = 380; co2 = 0.6; }
+    else if (/(salata|salad)/.test(n)) { kcal = 120; co2 = 0.1; }
+    else if (/(muz|banana|mandalina|fruit)/.test(n)) { kcal = 110; co2 = 0.1; }
+    else if (/(sutlac|sütlaç|profiterol|kemalpasa|dessert)/.test(n)) { kcal = 420; co2 = 0.4; }
+    return { kcal, co2 };
+  };
 
   function renderDayChips(){
-    const holder = el("dayChips");
-    if(!holder) return;
-    holder.innerHTML = "";
-    Object.keys(MENU).forEach(day=>{
-      const b = document.createElement("button");
-      b.className = "miniBtn" + (day===state.day ? " primary":"");
-      b.textContent = day;
-      b.onclick = ()=>{ state.day=day; renderMenu(); renderKpis(); renderChart(); renderTotals(); };
-      holder.appendChild(b);
+    const wrap = document.getElementById('dayChips');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    MENU_ONLY_DAYS.forEach(day => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'chip' + (day===selectedDay ? ' chip-active' : '');
+      btn.textContent = day;
+      btn.addEventListener('click', () => {
+        selectedDay = day;
+        renderDayChips();
+        renderMenu();
+      });
+      wrap.appendChild(btn);
     });
-  }
-
-  function getVisibleDishes(){
-    let dishes = MENU[state.day].map(scaled);
-    if(state.lowCarbonOnly) dishes = dishes.filter(isLowCarbon);
-    if(state.glutenFreeOnly) dishes = dishes.filter(isGlutenFree);
-    return dishes;
-  }
-
-  function dishTitle(d){
-    const nm = d.name;
-    return pick(nm);
+    // small note
+    const note = document.getElementById('cafeteriaNote');
+    if (note) note.textContent = 'Cafeteria operates Monday to Friday.';
   }
 
   function renderMenu(){
-    const grid = el("menuGrid");
-    if(!grid) return;
-    grid.innerHTML = "";
-    const dishes = getVisibleDishes();
+    const grid = document.getElementById('menuGrid');
+    if (!grid) return;
 
-    dishes.forEach(d=>{
-      const title = dishTitle(d);
-      const subtitle = LANG === "en" ? d.name.tr : d.name.en; // show "other" for context
-      const desc = pick(d.description);
+    const days = menuData?.days || {};
+    const items = Array.isArray(days[selectedDay]) ? days[selectedDay] : [];
 
-      const card = document.createElement("div");
-      card.className = "card dish";
-      card.innerHTML = `
-        <div class="dishTop">
-          <div>
-            <h3>${title} <span style="color:var(--muted); font-weight:800;">• ${subtitle}</span></h3>
-            <div class="meta">
-              <span class="tag">${fmt.kcal(d.calories_kcal)}</span>
-              <span class="tag gray">${fmt.kg(d.co2_kg)}</span>
-              <span class="tag gray">${Math.round(d.macros_g.protein)}P • ${Math.round(d.macros_g.carbs)}C • ${Math.round(d.macros_g.fat)}F</span>
+    grid.innerHTML = '';
+    if (!items.length){
+      grid.innerHTML = `<div class="card"><div class="card-body">
+        <div class="muted">Menu data not available for ${selectedDay}.</div>
+      </div></div>`;
+    } else {
+      items.forEach(name => {
+        const info = fallbackDishInfo(name);
+        const card = document.createElement('div');
+        card.className = 'card dish-card';
+        card.innerHTML = `
+          <div class="card-body">
+            <div class="dish-title">${escapeHtml(name)}</div>
+            <div class="dish-meta">
+              <span class="badge">${Math.round(info.kcal)} kcal (est.)</span>
+              <span class="badge">${info.co2.toFixed(1)} kg CO₂e (est.)</span>
             </div>
           </div>
-        </div>
-        <p>${desc}</p>
-        <div class="actions">
-          <button class="miniBtn primary" data-recipe="${d.id}">${t("btn_recipe")}</button>
-          <button class="miniBtn" data-ing="${d.id}">${t("btn_ing")}</button>
-          <button class="miniBtn" data-all="${d.id}">${t("btn_all")}</button>
-        </div>
-      `;
-      grid.appendChild(card);
-    });
-
-    grid.querySelectorAll("[data-recipe]").forEach(btn=>{
-      btn.addEventListener("click", ()=>openModal(btn.getAttribute("data-recipe"), "full"));
-    });
-    grid.querySelectorAll("[data-ing]").forEach(btn=>{
-      btn.addEventListener("click", ()=>openModal(btn.getAttribute("data-ing"), "ingredients"));
-    });
-    grid.querySelectorAll("[data-all]").forEach(btn=>{
-      btn.addEventListener("click", ()=>openModal(btn.getAttribute("data-all"), "allergens"));
-    });
-  }
-
-  function flattenAllDishes(){
-    const map = new Map();
-    for(const day of Object.keys(MENU)){
-      for(const d of MENU[day]){
-        map.set(d.id, d);
-      }
-    }
-    return [...map.values()];
-  }
-
-  function renderRecipes(){
-    const grid = el("recipesGrid");
-    if(!grid) return;
-    grid.innerHTML = "";
-    const q = (state.recipeQuery || "").toLowerCase().trim();
-
-    const items = flattenAllDishes().filter(d=>{
-      if(!q) return true;
-      const hay = [d.name.en, d.name.tr, d.name.ru, pick(d.description)].join(" ").toLowerCase();
-      return hay.includes(q);
-    }).map(scaled);
-
-    items.forEach(d=>{
-      const card = document.createElement("div");
-      card.className = "card dish";
-      card.innerHTML = `
-        <div class="dishTop">
-          <div>
-            <h3>${pick(d.name)} <span style="color:var(--muted); font-weight:800;">• ${d.name.tr}</span></h3>
-            <div class="meta">
-              <span class="tag">${fmt.kcal(d.calories_kcal)}</span>
-              <span class="tag gray">${fmt.kg(d.co2_kg)}</span>
-            </div>
-          </div>
-        </div>
-        <p>${pick(d.description)}</p>
-        <div class="actions">
-          <button class="miniBtn primary" data-recipe="${d.id}">${t("btn_recipe")}</button>
-        </div>
-      `;
-      grid.appendChild(card);
-    });
-
-    grid.querySelectorAll("[data-recipe]").forEach(btn=>{
-      btn.addEventListener("click", ()=>openModal(btn.getAttribute("data-recipe"), "full"));
-    });
-  }
-
-  function renderTotals(){
-    const all = MENU[state.day].map(scaled);
-    const totalCO2 = all.reduce((s,x)=>s+x.co2_kg,0);
-    const tc = el("totalCO2");
-    if(tc) tc.textContent = fmt.kg(totalCO2);
-  }
-
-  function renderKpis(){
-    const visible = getVisibleDishes();
-    const all = MENU[state.day].map(scaled);
-    const totalKcal = all.reduce((s,x)=>s+x.calories_kcal,0);
-    const totalCO2 = all.reduce((s,x)=>s+x.co2_kg,0);
-
-    el("kpiDishes").textContent = String(visible.length);
-    el("kpiCalories").textContent = fmt.kcal(totalKcal);
-    el("kpiCO2").textContent = fmt.kg(totalCO2);
-  }
-
-  // =============================
-  // Modal
-  // =============================
-  function findDish(id){
-    for(const day of Object.keys(MENU)){
-      const d = MENU[day].find(x=>x.id===id);
-      if(d) return scaled(d);
-    }
-    return null;
-  }
-
-  function openModal(id, mode="full"){
-    const d = findDish(id);
-    if(!d) return;
-
-    el("mTitle").textContent = `${pick(d.name)} • ${d.name.tr}`;
-    el("mMeta").innerHTML = `
-      <span class="tag">${fmt.kcal(d.calories_kcal)}</span>
-      <span class="tag gray">${fmt.kg(d.co2_kg)}</span>
-      <span class="tag gray">${Math.round(d.macros_g.protein)}P • ${Math.round(d.macros_g.carbs)}C • ${Math.round(d.macros_g.fat)}F</span>
-    `;
-
-    el("mIngr").innerHTML = pick(d.ingredients).map(x=>`<li>${x}</li>`).join("");
-    el("mAll").innerHTML = pick(d.allergens).map(x=>`<li>${x}</li>`).join("");
-    el("mNut").innerHTML = `
-      <li><b>Protein:</b> ${Math.round(d.macros_g.protein)} g</li>
-      <li><b>Carbs:</b> ${Math.round(d.macros_g.carbs)} g</li>
-      <li><b>Fat:</b> ${Math.round(d.macros_g.fat)} g</li>
-      <li><b>Carbon footprint:</b> ${fmt.kg(d.co2_kg)}</li>
-    `;
-    el("mSteps").innerHTML = pick(d.recipe_steps).map(s=>`<li>${s}</li>`).join("");
-
-    // mode focus
-    const boxes = document.querySelectorAll(".modalBody .box");
-    boxes.forEach(b=>b.style.display="");
-
-    if(mode==="ingredients"){
-      el("mAll").closest(".box").style.display = "none";
-      el("mNut").closest(".box").style.display = "none";
-      el("mSteps").closest(".box").style.display = "none";
-    } else if(mode==="allergens"){
-      el("mIngr").closest(".box").style.display = "none";
-      el("mNut").closest(".box").style.display = "none";
-      el("mSteps").closest(".box").style.display = "none";
+        `;
+        grid.appendChild(card);
+      });
     }
 
-    el("modal").style.display = "grid";
-  }
+    // stats
+    const dishesShown = document.getElementById('stat-dishes');
+    const totalKcal = document.getElementById('stat-kcal');
+    const totalCO2 = document.getElementById('stat-co2');
+    const count = items.length;
 
-  function closeModal(){ el("modal").style.display = "none"; }
-  el("mClose").addEventListener("click", closeModal);
-  el("modal").addEventListener("click", (e)=>{ if(e.target.id==="modal") closeModal(); });
-  document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeModal(); });
-
-  // =============================
-  // Chart
-  // =============================
-  let chart = null;
-  function renderChart(){
-    const all = MENU[state.day].map(scaled);
-    const labels = all.map(d=>pick(d.name));
-    const values = all.map(d=>d.co2_kg);
-
-    const canvas = document.getElementById("co2Chart");
-    if(!canvas) return;
-
-    if(chart) chart.destroy();
-    chart = new Chart(canvas, {
-      type: "bar",
-      data: { labels, datasets: [{ label: "kg CO₂e", data: values }] },
-      options: { responsive: true, plugins: { legend: { display: true } }, scales: { y: { beginAtZero: true } } }
+    let kcalSum = 0, co2Sum = 0;
+    items.forEach(n=>{
+      const info = fallbackDishInfo(n);
+      kcalSum += info.kcal;
+      co2Sum += info.co2;
     });
-  }
 
-  // =============================
-  // Events
-  // =============================
-  el("portionInput").value = String(state.portions);
+    if (dishesShown) dishesShown.textContent = String(count);
+    if (totalKcal) totalKcal.textContent = count ? String(Math.round(kcalSum)) : '0';
+    if (totalCO2) totalCO2.textContent = count ? String(co2Sum.toFixed(1)) : '0.0';
 
-  el("portionInput").addEventListener("input", (e)=>{
-    state.portions = Math.max(1, Number(e.target.value) || 1);
-    localStorage.setItem("gp_portions", String(state.portions));
-    renderMenu(); renderRecipes(); renderKpis(); renderTotals(); renderChart();
-  });
-
-  el("filterLowCarbon").addEventListener("change", (e)=>{
-    state.lowCarbonOnly = e.target.checked;
-    renderMenu(); renderKpis();
-  });
-
-  el("filterGlutenFree").addEventListener("change", (e)=>{
-    state.glutenFreeOnly = e.target.checked;
-    renderMenu(); renderKpis();
-  });
-
-  el("openPdfBtn").addEventListener("click", ()=>{
-    const url = (el("pdfUrl").value || "").trim();
-    if(!url) return;
-    window.open(url, "_blank", "noopener");
-  });
-
-  el("recipeSearch").addEventListener("input", (e)=>{
-    state.recipeQuery = e.target.value || "";
-    renderRecipes();
-  });
-
-  document.querySelectorAll(".langBtn").forEach(btn=>{
-    btn.addEventListener("click", ()=>setLang(btn.getAttribute("data-lang")));
-  });
-
-  // University settings (demo)
-  function loadUni(){
-    const data = JSON.parse(localStorage.getItem("gp_uni") || "{}");
-    if(data.logo) el("uniLogo").src = data.logo;
-    if(data.name) { el("uniName").textContent = data.name; el("aboutUniName").textContent = data.name; }
-    if(data.addr) { el("uniAddr").textContent = data.addr; el("aboutUniAddr").textContent = data.addr; }
-    const pdfHost = (()=>{ try{ return new URL(el("pdfUrl").value).host; } catch { return "—"; } })();
-    el("aboutUniPdf").textContent = pdfHost || "—";
-    // fill inputs
-    el("uniLogoUrl").value = data.logo || el("uniLogo").src;
-    el("uniNameInput").value = data.name || el("uniName").textContent;
-    el("uniAddrInput").value = data.addr || el("uniAddr").textContent;
-  }
-  el("saveUniBtn").addEventListener("click", ()=>{
-    const data = {
-      logo: el("uniLogoUrl").value.trim(),
-      name: el("uniNameInput").value.trim(),
-      addr: el("uniAddrInput").value.trim()
-    };
-    localStorage.setItem("gp_uni", JSON.stringify(data));
-    loadUni();
-  });
-
-  // Init
-  loadUni();
-  applyI18n();
-  renderDayChips();
-  renderMenu();
-  renderRecipes();
-  renderKpis();
-  renderTotals();
-  renderChart();
-  showPage(currentRoute());
-</script>
-<script>window.addEventListener('DOMContentLoaded', ()=>{
-
-/* Mobile drawer navigation (fix): open/close hamburger menu */
-(function(){
-  const btnOpen = document.getElementById('mobOpen');
-  const btnClose = document.getElementById('mobClose');
-  const drawer = document.getElementById('mobDrawer');
-  const overlay = document.getElementById('mobOverlay');
-  if(!btnOpen || !btnClose || !drawer || !overlay) return;
-
-  function openDrawer(){
-    drawer.classList.add('open');
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.overflow = 'hidden';
-  }
-  function closeDrawer(){
-    drawer.classList.remove('open');
-    document.documentElement.style.overflow = '';
-    document.body.style.overflow = '';
-  }
-
-  btnOpen.addEventListener('click', openDrawer);
-  btnClose.addEventListener('click', closeDrawer);
-  overlay.addEventListener('click', closeDrawer);
-  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDrawer(); });
-
-  // Close after navigation click (links, language pills)
-  drawer.addEventListener('click', (e)=>{
-    const a = e.target.closest('a,button');
-    if(!a) return;
-    // allow close button already handled; overlay handled
-    if(a.id === 'mobClose') return;
-    if(a.classList && (a.classList.contains('pill') || a.classList.contains('langBtn'))){
-      setTimeout(closeDrawer, 50);
+    // update "updated_at" line if exists
+    const upd = document.getElementById('menuUpdatedAt');
+    if (upd && menuData?.updated_at) {
+      const d = new Date(menuData.updated_at);
+      upd.textContent = isFinite(d.getTime()) ? d.toLocaleString() : menuData.updated_at;
     }
+    const range = document.getElementById('menuDateRange');
+    if (range && menuData?.date_range) range.textContent = menuData.date_range;
+
+    // PDF link
+    const pdfLink = document.getElementById('pdfLink');
+    if (pdfLink) {
+      pdfLink.href = menuData?.pdf_filename ? menuData.pdf_filename : 'menu.pdf';
+    }
+  }
+
+  async function loadMenu(){
+    try{
+      const res = await fetch(`menu.json?ts=${Date.now()}`, {cache:'no-store'});
+      if(!res.ok) throw new Error(`menu.json HTTP ${res.status}`);
+      menuData = await res.json();
+    } catch (e){
+      console.error('Failed to load menu.json', e);
+      menuData = null;
+    }
+    renderDayChips();
+    renderMenu();
+  }
+
+  function escapeHtml(s){
+    return String(s)
+      .replaceAll('&','&amp;')
+      .replaceAll('<','&lt;')
+      .replaceAll('>','&gt;')
+      .replaceAll('"','&quot;')
+      .replaceAll("'","&#039;");
+  }
+
+  // ===== INIT =====
+  document.addEventListener('DOMContentLoaded', () => {
+    // wire nav
+    $$('a[href^="#/"]').forEach(a=>{
+      a.addEventListener('click', (e)=>{
+        const href=a.getAttribute('href')||'';
+        const key=href.replace('#/','').trim().toLowerCase();
+        if (PAGES.includes(key)){
+          e.preventDefault();
+          location.hash = `#/${key}`;
+        }
+      });
+    });
+
+    window.addEventListener('hashchange', routeFromHash);
+    routeFromHash();
+    loadMenu();
   });
 })();
-
-});
 </script>
 </body>
 </html>
