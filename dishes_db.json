@@ -6,14 +6,6 @@
     "allergens": ["None"],
     "recipe": "Tomatoes are cooked with onion and garlic, blended and served hot."
   },
-  "Domates Corbasi": {
-    "name_en": "Tomato Soup",
-    "kcal": 150,
-    "ingredients": ["Tomato", "Onion", "Garlic", "Olive oil", "Salt"],
-    "allergens": ["None"],
-    "recipe": "Tomatoes are cooked with onion and garlic, blended and served hot."
-  },
-
   "Etli Nohut": {
     "name_en": "Chickpeas with Meat",
     "kcal": 420,
@@ -21,7 +13,6 @@
     "allergens": ["None"],
     "recipe": "Chickpeas are stewed with beef and tomato paste."
   },
-
   "Pirinç Pilavı": {
     "name_en": "Rice Pilaf",
     "kcal": 280,
@@ -29,14 +20,6 @@
     "allergens": ["Dairy"],
     "recipe": "Rice is cooked with butter and water until fluffy."
   },
-  "Pirinc Pilavi": {
-    "name_en": "Rice Pilaf",
-    "kcal": 280,
-    "ingredients": ["Rice", "Butter", "Water", "Salt"],
-    "allergens": ["Dairy"],
-    "recipe": "Rice is cooked with butter and water until fluffy."
-  },
-
   "Mercimek Çorbası": {
     "name_en": "Lentil Soup",
     "kcal": 180,
@@ -44,14 +27,6 @@
     "allergens": ["None"],
     "recipe": "Lentils are boiled with vegetables and blended."
   },
-  "Mercimek Corbasi": {
-    "name_en": "Lentil Soup",
-    "kcal": 180,
-    "ingredients": ["Red lentils", "Onion", "Carrot", "Oil"],
-    "allergens": ["None"],
-    "recipe": "Lentils are boiled with vegetables and blended."
-  },
-
   "Balık Hamsi": {
     "name_en": "Anchovy Fish",
     "kcal": 350,
@@ -59,11 +34,151 @@
     "allergens": ["Fish", "Gluten"],
     "recipe": "Anchovies are lightly floured and fried."
   },
-  "Balik Hamsi": {
-    "name_en": "Anchovy Fish",
-    "kcal": 350,
-    "ingredients": ["Anchovy", "Flour", "Oil", "Salt"],
-    "allergens": ["Fish", "Gluten"],
-    "recipe": "Anchovies are lightly floured and fried."
+
+  "Fıstıklı Alman Patates": {
+    "name_en": "German Potato Salad with Pistachio",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
+  },
+  "Salata Açık Büfe": {
+    "name_en": "Salad Bar",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
+  },
+  "Muz": {
+    "name_en": "Banana",
+    "kcal": 105,
+    "ingredients": ["Banana"],
+    "allergens": ["None"],
+    "recipe": "Serve fresh."
+  },
+
+  "Makarna": {
+    "name_en": "Pasta",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
+  },
+  "Tazefasulye": {
+    "name_en": "Green Beans Stew",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
+  },
+  "Kemalpaşa": {
+    "name_en": "Kemalpaşa Dessert",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
+  },
+
+  "Yoğurt Çorbası": {
+    "name_en": "Yogurt Soup",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
+  },
+  "Tavuk Şiş": {
+    "name_en": "Chicken Shish",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
+  },
+  "Bulgur Pilavı": {
+    "name_en": "Bulgur Pilaf",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
+  },
+  "Soğan Halkası/Lahana Kavurma": {
+    "name_en": "Onion Rings / Sauteed Cabbage",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
+  },
+  "Sütlaç": {
+    "name_en": "Rice Pudding",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
+  },
+
+  "Tel Şehriye Çorbası": {
+    "name_en": "Vermicelli Soup",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
+  },
+  "İzmir Köfte": {
+    "name_en": "İzmir Meatballs",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
+  },
+  "Soslu Patlıcan": {
+    "name_en": "Eggplant in Sauce",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
+  },
+  "Mandalina": {
+    "name_en": "Mandarin",
+    "kcal": 47,
+    "ingredients": ["Mandarin"],
+    "allergens": ["None"],
+    "recipe": "Serve fresh."
+  },
+
+  "Beyran Çorbası": {
+    "name_en": "Beyran Soup",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
+  },
+  "Tavuk Kanat": {
+    "name_en": "Chicken Wings",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
+  },
+
+  "Domates Soslu Makarma": {
+    "name_en": "Pasta with Tomato Sauce",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
+  },
+
+  "Kereviz": {
+    "name_en": "Celery Root Dish",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
+  },
+  "Profiterol": {
+    "name_en": "Profiterole",
+    "kcal": 0,
+    "ingredients": [],
+    "allergens": [],
+    "recipe": ""
   }
 }
