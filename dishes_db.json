@@ -6,6 +6,13 @@
     "allergens": ["None"],
     "recipe": "Tomatoes are cooked with onion and garlic, blended and served hot."
   },
+  "Domates Corbasi": {
+    "name_en": "Tomato Soup",
+    "kcal": 150,
+    "ingredients": ["Tomato", "Onion", "Garlic", "Olive oil", "Salt"],
+    "allergens": ["None"],
+    "recipe": "Tomatoes are cooked with onion and garlic, blended and served hot."
+  },
 
   "Etli Nohut": {
     "name_en": "Chickpeas with Meat",
@@ -22,6 +29,13 @@
     "allergens": ["Dairy"],
     "recipe": "Rice is cooked with butter and water until fluffy."
   },
+  "Pirinc Pilavi": {
+    "name_en": "Rice Pilaf",
+    "kcal": 280,
+    "ingredients": ["Rice", "Butter", "Water", "Salt"],
+    "allergens": ["Dairy"],
+    "recipe": "Rice is cooked with butter and water until fluffy."
+  },
 
   "Mercimek Çorbası": {
     "name_en": "Lentil Soup",
@@ -30,8 +44,22 @@
     "allergens": ["None"],
     "recipe": "Lentils are boiled with vegetables and blended."
   },
+  "Mercimek Corbasi": {
+    "name_en": "Lentil Soup",
+    "kcal": 180,
+    "ingredients": ["Red lentils", "Onion", "Carrot", "Oil"],
+    "allergens": ["None"],
+    "recipe": "Lentils are boiled with vegetables and blended."
+  },
 
   "Balık Hamsi": {
+    "name_en": "Anchovy Fish",
+    "kcal": 350,
+    "ingredients": ["Anchovy", "Flour", "Oil", "Salt"],
+    "allergens": ["Fish", "Gluten"],
+    "recipe": "Anchovies are lightly floured and fried."
+  },
+  "Balik Hamsi": {
     "name_en": "Anchovy Fish",
     "kcal": 350,
     "ingredients": ["Anchovy", "Flour", "Oil", "Salt"],
