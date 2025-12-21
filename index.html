@@ -875,394 +875,303 @@
 </div>
 </div>
 <script>
-
-/* GreenPlate runtime (Mon–Fri) — client-side enrichment from dishes_db.json */
+/* GreenPlate runtime — fixes routing + menu/recipes rendering (GitHub Pages friendly) */
 (() => {
   const MENU_URL = "./menu.json";
   const DISHES_DB_URL = "./dishes_db.json";
-  const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
+  const FALLBACK_DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
 
   const state = {
+    menu: null,
+    db: {},
+    day: (localStorage.getItem("gp_day") || "Monday"),
     lang: (localStorage.getItem("gp_lang") || "en").toLowerCase(),
-    menu: null,      // normalized
-    db: {},          // dishes database (optional)
-    route: (location.hash || "#/home"),
   };
 
   const $ = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-  function setLang(lang){
-    state.lang = (lang || "en").toLowerCase();
-    localStorage.setItem("gp_lang", state.lang);
-    // highlight active
-    $$(".langBtn").forEach(b => b.classList.toggle("isActive", (b.dataset.lang||"").toLowerCase() === state.lang));
-    // re-render dynamic parts
-    renderRoute();
+  function safeText(x){ return (x==null) ? "" : String(x); }
+  function escHtml(s){
+    return safeText(s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[m]));
   }
 
-  // ---- Router (hash-based) ----
-  function normHash(h){
-    if(!h) return "#/home";
-    if(h.startsWith("#")) return h;
-    return "#" + h;
-  }
   function currentPath(){
-    const h = normHash(location.hash || "#/home");
-    const m = h.match(/^#(\/[^?]*)/);
-    return (m && m[1]) ? m[1] : "/home";
+    const h = (location.hash || "#/home").trim();
+    const m = h.match(/^#\/([^?]+)/);
+    return m ? ("/" + m[1]) : "/home";
   }
 
-  function showSection(path){
-    // sections use data-view="/home" etc in the template
-    $("[data-view]") && $$("[data-view]").forEach(sec => {
-      sec.classList.toggle("isHidden", sec.getAttribute("data-view") !== path);
-    });
-    // nav pills active state
-    $$("[data-route]").forEach(a=>{
-      a.classList.toggle("isActive", a.getAttribute("data-route") === path);
-    });
+  function showPage(path){
+    const map = {
+      "/home": "page-home",
+      "/menu": "page-menu",
+      "/recipes": "page-recipes",
+      "/sustainability": "page-sustainability",
+      "/method": "page-method",
+      "/what": "page-what",
+      "/about": "page-about",
+      "/get-involved": "page-get-involved",
+    };
+    const target = map[path] || "page-home";
+
+    $$(".page").forEach(sec => sec.classList.toggle("active", sec.id === target));
+    $$("[data-route]").forEach(a => a.classList.toggle("active", a.getAttribute("data-route") === path));
   }
 
-  // ---- Data loading ----
-  async function safeFetchJson(url){
+  async function loadJson(url){
     try{
-      const res = await fetch(url, {cache:"no-store"});
-      if(!res.ok) return null;
-      return await res.json();
-    }catch(e){ return null; }
-  }
-
-  function normalizeMenu(raw){
-    const out = {
-      updated_at: raw?.updated_at || null,
-      pdf_filename: raw?.pdf_filename || "menu.pdf",
-      date_range: raw?.date_range || null,
-      days: {}
-    };
-    const daysRaw = raw?.days || {};
-    for(const d of DAYS){
-      const arr = Array.isArray(daysRaw[d]) ? daysRaw[d] : [];
-      out.days[d] = arr;
+      const r = await fetch(url, { cache: "no-store" });
+      if(!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
+      return await r.json();
+    }catch(e){
+      console.error("[GreenPlate] Failed to load", url, e);
+      return null;
     }
-    return out;
   }
 
-  function dishFromString(trName){
-    const key = (trName||"").trim();
-    const info = state.db?.[key] || state.db?.[key.normalize?.() ? key.normalize("NFKC") : key] || {};
-    const name_en = info.name_en || info.en || info.nameEn || "";
-    return {
-      name: {
-        tr: key,
-        en: name_en || key,
-        ru: info.name_ru || info.ru || (name_en || key)
-      },
-      kcal: (info.kcal ?? info.calories ?? null),
-      carbon_kgco2e: (info.carbon_kgco2e ?? info.co2 ?? null),
-      ingredients: Array.isArray(info.ingredients) ? info.ingredients : [],
-      allergens: Array.isArray(info.allergens) ? info.allergens : [],
-      recipe: info.recipe || "",
-      recipe_url: info.recipe_url || ""
-    };
+  function dishDisplayName(key){
+    const d = state.db?.[key];
+    if(!d) return key;
+    if(state.lang === "en" && d.name_en) return d.name_en;
+    // If later you add name_tr / name_ru, this will automatically use them
+    const alt = d["name_" + state.lang];
+    return alt || key;
   }
 
-  function normalizeDayItems(items){
-    // Accept either strings or already-enriched objects
-    return (items||[]).map(it=>{
-      if(it && typeof it === "object" && !Array.isArray(it)){
-        // attempt to coerce to our shape
-        const tr = it.name?.tr || it.name_tr || it.tr || it.name || "";
-        const en = it.name?.en || it.name_en || it.en || "";
-        return {
-          name: { tr: tr, en: en || tr, ru: it.name?.ru || it.name_ru || (en||tr) },
-          kcal: it.kcal ?? it.calories ?? null,
-          carbon_kgco2e: it.carbon_kgco2e ?? it.co2 ?? null,
-          ingredients: it.ingredients || [],
-          allergens: it.allergens || [],
-          recipe: it.recipe || "",
-          recipe_url: it.recipe_url || ""
-        };
-      }
-      return dishFromString(String(it||""));
-    }).filter(d=> (d.name?.tr||"").trim().length>0);
+  function getAllergens(d){
+    const a = d?.allergens;
+    if(!a) return [];
+    if(Array.isArray(a)) return a.filter(Boolean);
+    return [String(a)];
   }
 
-  // ---- UI renderers ----
-  function fmt(v, digits=0){
-    if(v===null || v===undefined || Number.isNaN(v)) return "—";
-    const n = Number(v);
-    if(!Number.isFinite(n)) return "—";
-    return n.toFixed(digits);
+  function isGlutenFree(d){
+    const allergens = getAllergens(d).map(x => String(x).toLowerCase());
+    return !allergens.some(x => x.includes("gluten"));
   }
 
-  function dishName(d){
-    const lang = state.lang;
-    if(lang==="tr") return d.name.tr;
-    if(lang==="ru") return d.name.ru || d.name.en || d.name.tr;
-    return d.name.en || d.name.tr;
+  function portionMultiplier(){
+    const v = Number($("#portionInput")?.value || 1);
+    return (Number.isFinite(v) && v > 0) ? v : 1;
   }
 
-  function txt(key){
-    const L = state.lang;
-    const dict = {
-      en: {
-        dishes:"Dishes", kcal:"kcal", ingredients:"Ingredients", allergens:"Allergens", recipe:"Recipe",
-        notAvailable:"Not available yet", openPdf:"Open official PDF", day:"Day"
-      },
-      tr: {
-        dishes:"Yemekler", kcal:"kcal", ingredients:"İçindekiler", allergens:"Alerjenler", recipe:"Tarif",
-        notAvailable:"Henüz yok", openPdf:"Resmi PDF'yi aç", day:"Gün"
-      },
-      ru: {
-        dishes:"Блюда", kcal:"ккал", ingredients:"Ингредиенты", allergens:"Аллергены", recipe:"Рецепт",
-        notAvailable:"Пока нет данных", openPdf:"Открыть официальный PDF", day:"День"
-      }
-    };
-    return (dict[L] && dict[L][key]) || dict.en[key] || key;
+  function activeDays(){
+    const daysObj = state.menu?.days || {};
+    const keys = Object.keys(daysObj);
+    return keys.length ? keys : FALLBACK_DAYS;
   }
 
-  function renderMenuPage(){
-    const menuView = document.querySelector('[data-view="/menu"]');
-    if(!menuView) return;
+  function setDay(day){
+    state.day = day;
+    localStorage.setItem("gp_day", day);
+    renderHomeKpis();
+    renderMenu();
+  }
 
-    // Hooks
-    const tabsWrap = menuView.querySelector("[data-menu-tabs]") || menuView.querySelector(".dayTabs") || menuView;
-    const listWrap = menuView.querySelector("[data-menu-list]") || menuView.querySelector(".menuCards") || menuView;
-    const kpiDishes = menuView.querySelector("[data-metric-dishes]");
-    const kpiKcal   = menuView.querySelector("[data-metric-kcal]");
-    const kpiCarbon = menuView.querySelector("[data-metric-carbon]");
-    const pdfA      = menuView.querySelector("[data-open-pdf]") || menuView.querySelector('a[href$="menu.pdf"]');
+  function renderDayChips(){
+    const wrap = $("#dayChips");
+    if(!wrap) return;
+    const days = activeDays();
+    if(!days.includes(state.day)) state.day = days[0] || "Monday";
 
-    if(pdfA) pdfA.href = "./" + (state.menu?.pdf_filename || "menu.pdf");
+    wrap.innerHTML = days.map(d => (
+      `<button class="chip ${d===state.day ? "active":""}" data-day="${escHtml(d)}" type="button">${escHtml(d)}</button>`
+    )).join("");
 
-    // active day
-    const savedDay = localStorage.getItem("gp_day") || "Monday";
-    const activeDay = DAYS.includes(savedDay) ? savedDay : "Monday";
+    $$(".chip[data-day]", wrap).forEach(btn => {
+      btn.addEventListener("click", () => setDay(btn.dataset.day || "Monday"));
+    });
+  }
 
-    function setActiveDay(day){
-      localStorage.setItem("gp_day", day);
-      $$(".gpDayBtn", tabsWrap).forEach(b=>b.classList.toggle("isActive", b.dataset.day===day));
-      const items = normalizeDayItems(state.menu?.days?.[day] || []);
-      renderDishCards(items);
-      renderKpis(items);
-    }
+  function renderMenu(){
+    const grid = $("#menuGrid");
+    if(!grid) return;
 
-    function renderTabs(){
-      // clear only if our buttons not present
-      if(!tabsWrap.querySelector(".gpDayBtn")){
-        const container = document.createElement("div");
-        container.className = "gpDayTabs";
-        container.style.display = "flex";
-        container.style.flexWrap = "wrap";
-        container.style.gap = "10px";
-        container.style.margin = "12px 0";
-        DAYS.forEach(d=>{
-          const btn = document.createElement("button");
-          btn.type="button";
-          btn.className="gpDayBtn";
-          btn.dataset.day=d;
-          btn.textContent=d;
-          btn.style.padding="10px 14px";
-          btn.style.borderRadius="999px";
-          btn.style.border="1px solid rgba(0,0,0,.15)";
-          btn.style.background="#fff";
-          btn.style.cursor="pointer";
-          btn.addEventListener("click", ()=>setActiveDay(d));
-          container.appendChild(btn);
-        });
-        tabsWrap.prepend(container);
-      }
-    }
+    renderDayChips();
 
-    function renderDishCards(items){
-      // ensure list container
-      let wrap = listWrap.querySelector(".gpDishList");
-      if(!wrap){
-        wrap = document.createElement("div");
-        wrap.className = "gpDishList";
-        wrap.style.display="grid";
-        wrap.style.gridTemplateColumns="repeat(auto-fit, minmax(240px, 1fr))";
-        wrap.style.gap="14px";
-        wrap.style.marginTop="12px";
-        listWrap.appendChild(wrap);
-      }
-      wrap.innerHTML = "";
-      if(items.length===0){
-        wrap.innerHTML = `<div class="gpEmpty" style="opacity:.75;padding:14px;border:1px dashed rgba(0,0,0,.2);border-radius:14px;">No data.</div>`;
-        return;
-      }
-      for(const d of items){
-        const card = document.createElement("div");
-        card.className="gpDishCard";
-        card.style.border="1px solid rgba(0,0,0,.08)";
-        card.style.borderRadius="16px";
-        card.style.padding="14px";
-        card.style.background="#fff";
-        card.innerHTML = `
-          <div style="font-weight:700;margin-bottom:6px;">${escapeHtml(dishName(d))}</div>
-          <div style="opacity:.8;font-size:13px;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
-            <span><b>${fmt(d.kcal,0)}</b> ${txt("kcal")}</span>
-            <span>•</span>
-            <span><b>${fmt(d.carbon_kgco2e,2)}</b> kg CO₂e</span>
+    const items = (state.menu?.days?.[state.day] || []).slice();
+    const mul = portionMultiplier();
+
+    const glutenFilter = $("#filterGlutenFree")?.checked;
+    // low-carbon filter is only meaningful when you add carbon data in dishes_db.json.
+    const lowCarbonFilter = $("#filterLowCarbon")?.checked;
+
+    const cards = [];
+    let totalKcal = 0;
+
+    for(const key of items){
+      const d = state.db?.[key] || null;
+
+      if(glutenFilter && d && !isGlutenFree(d)) continue;
+      if(lowCarbonFilter && d && typeof d.carbon_kg === "number" && d.carbon_kg > 1.0) continue;
+
+      const kcal = d && Number.isFinite(Number(d.kcal)) ? Number(d.kcal) * mul : null;
+      if(kcal != null) totalKcal += kcal;
+
+      const allergens = d ? getAllergens(d) : [];
+      const ingredients = d?.ingredients ? (Array.isArray(d.ingredients) ? d.ingredients : [String(d.ingredients)]) : [];
+      const recipe = safeText(d?.recipe);
+
+      cards.push(`
+        <article class="dishCard">
+          <div class="dishTop">
+            <div class="dishTitle">${escHtml(dishDisplayName(key))}</div>
+            <div class="dishMeta">
+              <span class="pillMini">${kcal==null ? "—" : Math.round(kcal)} kcal</span>
+              ${allergens.length ? `<span class="pillMini">${escHtml(allergens.join(", "))}</span>` : ``}
+            </div>
           </div>
-          <div style="font-size:13px;line-height:1.35;">
-            <div><b>${txt("ingredients")}:</b> ${d.ingredients?.length ? escapeHtml(d.ingredients.join(", ")) : `<span style="opacity:.7">${txt("notAvailable")}</span>`}</div>
-            <div style="margin-top:6px;"><b>${txt("allergens")}:</b> ${d.allergens?.length ? escapeHtml(d.allergens.join(", ")) : `<span style="opacity:.7">${txt("notAvailable")}</span>`}</div>
-            <div style="margin-top:6px;"><b>${txt("recipe")}:</b> ${
-              d.recipe_url ? `<a href="${escapeAttr(d.recipe_url)}" target="_blank" rel="noopener">Link</a>`
-              : (d.recipe ? escapeHtml(d.recipe) : `<span style="opacity:.7">${txt("notAvailable")}</span>`)
-            }</div>
+
+          <div class="dishBody">
+            <details class="dishDetails">
+              <summary>Ingredients</summary>
+              ${ingredients.length ? `<ul>${ingredients.map(x=>`<li>${escHtml(x)}</li>`).join("")}</ul>` : `<div class="muted">No data</div>`}
+            </details>
+            <details class="dishDetails">
+              <summary>Recipe</summary>
+              ${recipe ? `<div>${escHtml(recipe)}</div>` : `<div class="muted">No data</div>`}
+            </details>
           </div>
-        `;
-        wrap.appendChild(card);
-      }
+        </article>
+      `);
     }
 
-    function renderKpis(items){
-      const dishCount = items.length;
-      const totalKcal = items.reduce((a,x)=>a + (Number(x.kcal)||0), 0);
-      const totalCo2  = items.reduce((a,x)=>a + (Number(x.carbon_kgco2e)||0), 0);
+    grid.innerHTML = cards.length ? cards.join("") : `<div class="muted" style="padding:12px">No dishes for this day.</div>`;
 
-      if(kpiDishes) kpiDishes.textContent = String(dishCount);
-      if(kpiKcal)   kpiKcal.textContent   = dishCount ? String(Math.round(totalKcal)) : "—";
-      if(kpiCarbon) kpiCarbon.textContent = dishCount ? totalCo2.toFixed(2) : "—";
+    // Update KPI inside Menu page if present
+    const kpiDishes = $("#page-menu [data-metric-dishes]");
+    const kpiKcal = $("#page-menu [data-metric-kcal]");
+    const kpiCarbon = $("#page-menu [data-metric-carbon]");
+    if(kpiDishes) kpiDishes.textContent = String(cards.length);
+    if(kpiKcal) kpiKcal.textContent = (totalKcal ? String(Math.round(totalKcal)) : "—");
+    if(kpiCarbon) kpiCarbon.textContent = "—";
+  }
+
+  function renderHomeKpis(){
+    const dishesEl = $("#kpiDishes");
+    const kcalEl = $("#kpiCalories");
+    const co2El = $("#kpiCO2");
+
+    const items = (state.menu?.days?.[state.day] || []).slice();
+    const mul = portionMultiplier();
+
+    let dishesCount = 0;
+    let totalKcal = 0;
+
+    for(const key of items){
+      const d = state.db?.[key] || null;
+      dishesCount += 1;
+      const kcal = d && Number.isFinite(Number(d.kcal)) ? Number(d.kcal) * mul : null;
+      if(kcal != null) totalKcal += kcal;
     }
 
-    renderTabs();
-    setActiveDay(activeDay);
+    if(dishesEl) dishesEl.textContent = String(dishesCount || 0);
+    if(kcalEl) kcalEl.textContent = totalKcal ? String(Math.round(totalKcal)) : "—";
+    if(co2El) co2El.textContent = "—";
   }
 
-  function renderRecipesPage(){
-    const view = document.querySelector('[data-view="/recipes"]');
-    if(!view) return;
+  function renderRecipes(){
+    const grid = $("#recipesGrid");
+    if(!grid) return;
 
-    // collect unique dishes from current menu and db
-    const names = new Set();
-    for(const d of DAYS){
-      (state.menu?.days?.[d] || []).forEach(x=> names.add(String(x||"").trim()));
+    const q = ($("#recipeSearch")?.value || "").trim().toLowerCase();
+    const entries = Object.entries(state.db || {});
+    const out = [];
+
+    for(const [key, d] of entries){
+      const title = dishDisplayName(key);
+      const ingredients = d?.ingredients ? (Array.isArray(d.ingredients) ? d.ingredients : [String(d.ingredients)]) : [];
+      const recipe = safeText(d?.recipe);
+      const hay = (key + " " + title + " " + ingredients.join(" ") + " " + recipe).toLowerCase();
+      if(q && !hay.includes(q)) continue;
+
+      out.push(`
+        <article class="dishCard">
+          <div class="dishTop">
+            <div class="dishTitle">${escHtml(title)}</div>
+            <div class="dishMeta">
+              <span class="pillMini">${d && Number.isFinite(Number(d.kcal)) ? Math.round(Number(d.kcal)) : "—"} kcal</span>
+            </div>
+          </div>
+          <div class="dishBody">
+            <details class="dishDetails" open>
+              <summary>Recipe</summary>
+              ${recipe ? `<div>${escHtml(recipe)}</div>` : `<div class="muted">No data</div>`}
+            </details>
+            <details class="dishDetails">
+              <summary>Ingredients</summary>
+              ${ingredients.length ? `<ul>${ingredients.map(x=>`<li>${escHtml(x)}</li>`).join("")}</ul>` : `<div class="muted">No data</div>`}
+            </details>
+          </div>
+        </article>
+      `);
     }
-    const items = Array.from(names).filter(Boolean).map(tr=> dishFromString(tr));
 
-    // find target
-    let wrap = view.querySelector(".gpRecipesList");
-    if(!wrap){
-      wrap = document.createElement("div");
-      wrap.className="gpRecipesList";
-      wrap.style.display="grid";
-      wrap.style.gridTemplateColumns="repeat(auto-fit, minmax(260px, 1fr))";
-      wrap.style.gap="14px";
-      wrap.style.marginTop="14px";
-      view.appendChild(wrap);
-    }
-    wrap.innerHTML = "";
-
-    for(const d of items){
-      const card = document.createElement("div");
-      card.style.border="1px solid rgba(0,0,0,.08)";
-      card.style.borderRadius="16px";
-      card.style.padding="14px";
-      card.style.background="#fff";
-      card.innerHTML = `
-        <div style="font-weight:700;margin-bottom:6px;">${escapeHtml(dishName(d))}</div>
-        <div style="opacity:.8;font-size:13px;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
-          <span><b>${fmt(d.kcal,0)}</b> ${txt("kcal")}</span>
-          <span>•</span>
-          <span><b>${fmt(d.carbon_kgco2e,2)}</b> kg CO₂e</span>
-        </div>
-        <div style="font-size:13px;line-height:1.35;">
-          <div><b>${txt("ingredients")}:</b> ${d.ingredients?.length ? escapeHtml(d.ingredients.join(", ")) : `<span style="opacity:.7">${txt("notAvailable")}</span>`}</div>
-          <div style="margin-top:6px;"><b>${txt("allergens")}:</b> ${d.allergens?.length ? escapeHtml(d.allergens.join(", ")) : `<span style="opacity:.7">${txt("notAvailable")}</span>`}</div>
-          <div style="margin-top:6px;"><b>${txt("recipe")}:</b> ${
-            d.recipe_url ? `<a href="${escapeAttr(d.recipe_url)}" target="_blank" rel="noopener">Link</a>`
-            : (d.recipe ? escapeHtml(d.recipe) : `<span style="opacity:.7">${txt("notAvailable")}</span>`)
-          }</div>
-        </div>
-      `;
-      wrap.appendChild(card);
-    }
+    grid.innerHTML = out.length ? out.join("") : `<div class="muted" style="padding:12px">No recipes found.</div>`;
   }
 
-  function renderRoute(){
-    const path = currentPath();
-    showSection(path);
-    if(path==="/menu") renderMenuPage();
-    if(path==="/recipes") renderRecipesPage();
-    // other pages are mostly static
-  }
-
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, m => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
-    }[m]));
-  }
-  function escapeAttr(s){
-    return escapeHtml(s).replace(/"/g,"&quot;");
-  }
-
-  // ---- Mobile drawer toggle (safe) ----
-  function setupMobileNav(){
-    const openBtn = document.querySelector('[data-open-mobile]');
-    const closeBtn = document.querySelector('[data-close-mobile]');
-    const drawer = document.getElementById("mobDrawer");
-    if(!drawer) return;
-
-    function open(){ drawer.classList.add("isOpen"); drawer.setAttribute("aria-hidden","false"); }
-    function close(){ drawer.classList.remove("isOpen"); drawer.setAttribute("aria-hidden","true"); }
-
-    if(openBtn) openBtn.addEventListener("click", open);
-    if(closeBtn) closeBtn.addEventListener("click", close);
-
-    // close on backdrop click
-    drawer.addEventListener("click", (e)=>{
-      if(e.target === drawer) close();
+  function wireControls(){
+    $("#portionInput")?.addEventListener("input", () => {
+      renderHomeKpis();
+      renderMenu();
     });
-    // close when selecting route
-    drawer.addEventListener("click", (e)=>{
-      const a = e.target.closest("a[href^='#/']");
-      if(a) close();
-    });
+    $("#filterGlutenFree")?.addEventListener("change", renderMenu);
+    $("#filterLowCarbon")?.addEventListener("change", renderMenu);
+
+    $("#recipeSearch")?.addEventListener("input", renderRecipes);
+
+    // PDF button
+    const pdfUrl = $("#pdfUrl");
+    const openBtn = $("#openPdfBtn");
+    if(openBtn){
+      openBtn.addEventListener("click", (e) => {
+        // allow default if it's a link in your HTML
+      });
+    }
+    if(pdfUrl && openBtn && openBtn.tagName.toLowerCase() === "a"){
+      pdfUrl.addEventListener("input", () => {
+        const v = pdfUrl.value.trim();
+        if(v) openBtn.setAttribute("href", v);
+      });
+    }
   }
 
-  function setupRoutes(){
-    // click on route links
-    document.body.addEventListener("click", (e)=>{
-      const a = e.target.closest("a[href^='#/']");
-      if(!a) return;
-      // allow normal hash navigation
-      setTimeout(renderRoute, 0);
+  function boot(){
+    // Load data
+    Promise.all([loadJson(DISHES_DB_URL), loadJson(MENU_URL)]).then(([db, menu]) => {
+      state.db = db || {};
+      state.menu = menu || {};
+      // pdf link
+      const pdfUrl = $("#pdfUrl");
+      const openBtn = $("#openPdfBtn");
+      const pdfName = state.menu?.pdf_filename || "menu.pdf";
+      if(pdfUrl) pdfUrl.value = `./${pdfName}`;
+      if(openBtn && openBtn.tagName.toLowerCase() === "a") openBtn.setAttribute("href", `./${pdfName}`);
+
+      wireControls();
+      // initial render
+      showPage(currentPath());
+      renderDayChips();
+      renderHomeKpis();
+      renderMenu();
+      renderRecipes();
     });
-    window.addEventListener("hashchange", renderRoute);
-  }
 
-  function setupLanguageButtons(){
-    document.body.addEventListener("click", (e)=>{
-      const b = e.target.closest(".langBtn[data-lang]");
-      if(!b) return;
-      setLang(b.dataset.lang);
+    // hash routing
+    window.addEventListener("hashchange", () => {
+      const path = currentPath();
+      showPage(path);
+      if(path === "/menu"){ renderMenu(); }
+      if(path === "/recipes"){ renderRecipes(); }
+      if(path === "/home"){ renderHomeKpis(); }
     });
-    setLang(state.lang);
-  }
-
-  async function boot(){
-    setupRoutes();
-    setupMobileNav();
-    setupLanguageButtons();
-
-    // load db (optional) + menu
-    const [db, menuRaw] = await Promise.all([
-      safeFetchJson(DISHES_DB_URL),
-      safeFetchJson(MENU_URL),
-    ]);
-    state.db = db || {};
-    state.menu = normalizeMenu(menuRaw || {});
-    renderRoute();
   }
 
   document.addEventListener("DOMContentLoaded", boot);
 })();
-
 </script>
+
 <script>window.addEventListener('DOMContentLoaded', ()=>{
 
 /* Mobile drawer navigation (fix): open/close hamburger menu */
